@@ -1,0 +1,16 @@
+{{ define "main" }}
+<div id="home" >
+  <h1>Posts</h1>
+  <ul class="posts">
+  {{ .Content }}
+  {{ range site.RegularPages }}
+  <li>
+    {{- partial "article.html" . -}}
+  </li>
+  {{ end }}
+  </ul>
+  And now home is done!
+  <hr>
+</div>
+{{ end }}
+

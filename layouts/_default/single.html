@@ -1,0 +1,19 @@
+{{ define "main" }}
+<div id="post">
+  {{- .Title -}}
+  <p class="meta"> {{ .Date | time.Format ":date_medium" }}</p>
+  {{ .Content }}
+</div>
+<div id="related">
+  <h2>Related Posts</h2>
+  <ul class="posts">
+    {{- $relatedPagesx := where site.Pages "Params.tags" "intersect" .Params.tags -}}    
+    {{- $relatedPagesx := where $relatedPagesx "Permalink" "ne" .Permalink -}}
+    {{- range $relatedPagesx -}}
+    <li>
+      {{- partial "article.html" . -}} 
+    </li>
+    {{- end -}}
+  </ul>
+</div>
+{{- end -}}
