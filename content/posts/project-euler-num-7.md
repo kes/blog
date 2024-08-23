@@ -46,11 +46,8 @@ If I follow the given algorithm, then I get the following:
 
 {{< highlight lisp "linenos=true, linenostart=1" >}}
 (defun generate-primes (n)
-  "Returns a list of n prime numbers"
-  (let ((numbers (make-array n :initial-element 1))
-        (i 2)
-        (j 1)
-        (x 0))
+  "Returns a list of primes from 2 to n"
+  (let ((numbers (make-array n :initial-element 1)))
     ;;
     ;; note: the index of the array, is the number of
     ;; interest, while the value at array[index] is whether
@@ -59,48 +56,36 @@ If I follow the given algorithm, then I get the following:
     ;; starting at the prime number 2 (that is, we consider 2 to be
     ;; the first prime number)
 
-    ;; Behold! The Sieve of Eratosthenes!  :)
-    (loop while (< i (sqrt n))
-          do (progn
-               ;; if array[i] is a prime number, continue, but if not
-               ;; there's nothing to do so we'll only need to increase i
-               ;; i -- notice that this _if_ does not have an _else_
-
-               (if (= 1 (aref numbers i))
-                   (progn
-                     ;; since we are on a prime, we'll iterate over
-                     ;; the multiples of the prime (starting at the
-                     ;; square of the prime), so (i^2 + i*x)
-                     (setf x 0) ;; notice starting x = 0
-                     (loop while (< (setf j (+ (expt i 2) (* i x))) n)
-                           do(progn
-                               (setf (aref numbers j) 0) ;; not a prime!
-                               (setf x (1+ x)))))) ;; increment x for
-                                                   ;; the next
-                                                   ;; multiple
-               ;;
-               ;; if we are not on a prime, then we just skip to the
-               ;; next number by incrementing the index.
-               (setf i (1+ i))))
-    ;;
-    ;; notice that we are still in the let, so generate the list of
-    ;; prime numbers
+    ;; Sieve of Eratosthenes
+    (loop for i from 2 below (sqrt n)
+      while (< i (sqrt n))
+      when (= 1 (aref numbers i))
+        do
+           ;; now we'll iterate over every (i^2 + i*x) number
+           (loop for x from 0
+             with j = 0
+             while (< (setf j (+ (expt i 2) (* i x))) n)
+             do
+                (setf (aref numbers j) 0)))
+    ;; generate the list of prime numbers from the array.
     (loop for x from 2 to (1- n)
           when (= (aref numbers x) 1)
             collect x)))
 {{< /highlight >}}
 
-Is this the best? I'm not sure. Is it the most readable? Probably not. I'm always a bit ambivalent
-about using `loop` in Common Lisp. I shouldn't be since it's actually a pretty impressive [DSL](https://en.wikipedia.org/wiki/Domain-specific_language). Loop or
-not, I'd rather pull some of this apart,
+I've always been a bit ambivalent about using `loop` in Common Lisp. Perhaps I should be using scheme?
+But that attitude has also caused me not to study `loop` syntax as I should.
 
-But, for the moment, I'll leave it.
+But once you study loop at [CLHS](https://www.lispworks.com/documentation/HyperSpec/Front/index.htm) you're confronted with a really powerful  [DSL](https://en.wikipedia.org/wiki/Domain-specific_language). And one gets the feeling
+that it is both understandable and yet inexhaustible.
+
+As can be seen, this is a concise expression of the sieve.
 
 So what's returned is a list of primes. But I want the 10001th prime.
 
-I need to turn the list into an array, and then index to the 10001th prime.
+I can just turn the list into an array, and then index to the 10001th prime.
 
-`coerce` is the answer.
+`coerce` is the answer for this.
 
 <a id="code-snippet--get-prime"></a>
 {{< highlight lisp >}}
