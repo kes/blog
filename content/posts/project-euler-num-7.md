@@ -76,7 +76,7 @@ If I follow the given algorithm, then I get the following:
 I've always been a bit ambivalent about using `loop` in Common Lisp. Perhaps I should be using scheme?
 But that attitude has also caused me not to study `loop` syntax as I should.
 
-But once you study loop at [CLHS](https://www.lispworks.com/documentation/HyperSpec/Front/index.htm) you're confronted with a really powerful  [DSL](https://en.wikipedia.org/wiki/Domain-specific_language). And one gets the feeling
+But once you study loop at [CLHS](https://www.lispworks.com/documentation/HyperSpec/Front/index.htm) you're confronted with a really powerful [DSL](https://en.wikipedia.org/wiki/Domain-specific_language). And one gets the feeling
 that it is both understandable and yet inexhaustible.
 
 As can be seen, this is a concise expression of the sieve.
@@ -93,8 +93,8 @@ I can just turn the list into an array, and then index to the 10001th prime.
 
 (defun get-prime (i &optional n)
   "Generate a list of n prime numbers and returns the ith prime number.
-An n of 1600000 is more than sufficient to get the 10001th prime."
-  (progn (if (null n) (setf n 1600000))
+An n of 105,000 is sufficient to get the 10001th prime."
+  (progn (if (null n) (setf n 105000))
          (aref (coerce (generate-primes n) 'vector) (1- i))))
 
 (get-prime 10001)
