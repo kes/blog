@@ -2,7 +2,7 @@
 title: "Project Euler - Number 308"
 author: ["Karl Stump"]
 date: 2024-08-28
-tags: ["euler", "C", "lisp"]
+tags: ["euler", "lisp"]
 draft: false
 ---
 
@@ -64,12 +64,12 @@ So, our simulator looks like this:
 
 <a id="code-snippet--fractran-simulator"></a>
 {{< highlight lisp >}}
-(defun fractran (state program)
+(defun fractran-simulator (state program)
   (cond ((null program) nil)
         ((integerp (/ (* state (caar program)) (cadar program)))
          (/ (* state (caar program)) (cadar program)))
-        (t (fractran state (cdr program)))))
-(fractran start *fp*)
+        (t (fractran-simulator state (cdr program)))))
+(fractran-simulator start *fp*)
 {{< /highlight >}}
 
 Easy peasy. Let's use an initial seed value of 2 (as the problem description says).
@@ -87,7 +87,7 @@ This is the correct result for the first iteration. So, we're off to a good star
 
 (loop for i from 1 to 20
       with state = 2
-      do (setf state (fractran state *fp*))
+      do (setf state (fractran-simulator state *fp*))
       collect (list i state) into results
       finally (return (cons '(iteration state) results)))
 {{< /highlight >}}
@@ -205,7 +205,7 @@ That's the type of thing we want. Let's get more data (and I'll start displaying
 {{< highlight lisp >}}
 (loop for i from 1 to 20
       with state = 2
-      collect (get-status i (setf state (fractran state *fp*))))
+      collect (get-status i (setf state (fractran-simulator state *fp*))))
 {{< /highlight >}}
 
 Okay, here it is:
@@ -430,6 +430,20 @@ Each state that follows is very easy to follow. A simple implementation of the f
 {{< /highlight >}}
 
 
+## S19 {#s19}
+
+{{< highlight lisp >}}
+(defun s19 (reg)
+  (incf (r c))
+  (cond ((> (r 2) 0)
+         (decf (r 2))
+         (state-change 19 23))
+        ;; otherwise update factors and move to state 11
+        (t (incf (r 7))
+           (state-change 19 11))))
+{{< /highlight >}}
+
+
 ## S23 S29 {#s23-s29}
 
 {{< highlight lisp >}}
@@ -447,40 +461,26 @@ Each state that follows is very easy to follow. A simple implementation of the f
 
 ## Miscellaneous {#miscellaneous}
 
-Some utilities necessary for running and printing results.
-
+<a id="code-snippet--iterate"></a>
 {{< highlight lisp >}}
-  (defun init-fr ()
-  (setf (fr c) 0)
-  (setf (fr s) 1)
-  (setf (fr p) 0)
-  (setf (fr 2) 1)
-  (setf (fr 3) 0)
-  (setf (fr 5) 0)
-  (setf (fr 7) 0)
-  (setf (fr 11) 0)
-  (setf (fr 13) 0)
-  (setf (fr 17) 0)
-  (setf (fr 19) 0)
-  (setf (fr 23) 0)
-  (setf (fr 29) 0))
+    (defun init-fr ()
+    (setf (fr c) 0)
+    (setf (fr s) 1)
+    (setf (fr p) 0)
+    (setf (fr 1) 0)
+    (setf (fr 2) 1)
+    (setf (fr 3) 0)
+    (setf (fr 5) 0)
+    (setf (fr 7) 0)
+    (setf (fr 11) 0)
+    (setf (fr 13) 0)
+    (setf (fr 17) 0)
+    (setf (fr 19) 0)
+    (setf (fr 23) 0)
+    (setf (fr 29) 0))
 
-(defun get-r-list ()
-  (list (fr 2) (fr 3) (fr 5) (fr 7) (fr 11) (fr 13) (fr 17) (fr 19) (fr 23)))
-
-(defun cycle (cycles)
-  (init-fr)
-    (format t "~8:@<~A~> | ~8:@<~A~> | 2  3  5  7 | 11 13 17 19 23 29 | Total~%" 'State 'Count)
-  (print-status)
-  (loop repeat cycles
-        with registers = *fractran-registers*
-        do (fractran-6 registers)
-        collect (print-status)))
-
-
-(defun print-status ()
-  (let ((amount
-          (* (expt 2 (fr 2))
+(defun calc-amount ()
+   (* (expt 2 (fr 2))
              (expt 3 (fr 3))
              (expt 5 (fr 5))
              (expt 7 (fr 7))
@@ -489,16 +489,71 @@ Some utilities necessary for running and printing results.
              (expt 17 (fr 17))
              (expt 19 (fr 19))
              (expt 23 (fr 23))
-             (expt 29 (fr 29)))))
+             (expt 29 (fr 29))))
 
-    (format
-     t
-     "~8d | ~8d |~2d ~2d ~2d ~2d | ~[--~; 1~] ~[--~; 1~] ~[--~; 1~] ~[--~; 1~] ~[--~; 1~] ~[--~; 1~] | ~d~%"
-          (fr s) (fr c) (fr 2) (fr 3) (fr 5) (fr 7) (fr 11)
-          (fr 13) (fr 17) (fr 19) (fr 23) (fr 29) amount)))
+(defun iterate (i-number)
+  (loop repeat i-number
+        do (fractran *fractran-registers*)
+        collect (list  (fr c) (fr s) (fr 2) (fr 3) (fr 5) (fr 7) (fr 11)
+          (fr 13) (fr 17) (fr 19) (fr 23) (fr 29) (calc-amount))))
+(init-fr)
+(iterate 50)
 {{< /highlight >}}
 
-And that's it.
+So, now running, we get the same results. The FSM works.
+
+| Iteration | 2  | 3 | 5 | 7 | 11 | 13 | 17 | 19 | 23 | 29 | State |       |
+|-----------|----|---|---|---|----|----|----|----|----|----|-------|-------|
+| 1         | 1  | 0 | 1 | 1 | -- | -- | -- | -- | -- | -- | 0     | 15    |
+| 2         | 11 | 0 | 1 | 2 | -- | 1  | -- | -- | -- | -- | 0     | 825   |
+| 3         | 29 | 0 | 0 | 2 | -- | -- | -- | -- | -- | -- | 1     | 725   |
+| 4         | 11 | 0 | 0 | 2 | 1  | 1  | -- | -- | -- | -- | 0     | 1925  |
+| 5         | 13 | 0 | 0 | 2 | 1  | -- | 1  | -- | -- | -- | 0     | 2275  |
+| 6         | 17 | 0 | 0 | 2 | -- | -- | -- | 1  | -- | -- | 0     | 425   |
+| 7         | 13 | 1 | 1 | 1 | -- | -- | 1  | -- | -- | -- | 0     | 390   |
+| 8         | 11 | 1 | 1 | 1 | -- | 1  | -- | -- | -- | -- | 0     | 330   |
+| 9         | 29 | 1 | 0 | 1 | -- | -- | -- | -- | -- | -- | 1     | 290   |
+| 10        | 11 | 1 | 0 | 1 | 1  | 1  | -- | -- | -- | -- | 0     | 770   |
+| 11        | 13 | 1 | 0 | 1 | 1  | -- | 1  | -- | -- | -- | 0     | 910   |
+| 12        | 17 | 1 | 0 | 1 | -- | -- | -- | 1  | -- | -- | 0     | 170   |
+| 13        | 13 | 2 | 1 | 0 | -- | -- | 1  | -- | -- | -- | 0     | 156   |
+| 14        | 11 | 2 | 1 | 0 | -- | 1  | -- | -- | -- | -- | 0     | 132   |
+| 15        | 29 | 2 | 0 | 0 | -- | -- | -- | -- | -- | -- | 1     | 116   |
+| 16        | 11 | 2 | 0 | 0 | 1  | 1  | -- | -- | -- | -- | 0     | 308   |
+| 17        | 13 | 2 | 0 | 0 | 1  | -- | 1  | -- | -- | -- | 0     | 364   |
+| 18        | 17 | 2 | 0 | 0 | -- | -- | -- | 1  | -- | -- | 0     | 68    |
+| 19        | 1  | 2 | 0 | 0 | -- | -- | -- | -- | -- | -- | 0     | 4     |
+| 20        | 1  | 1 | 1 | 1 | -- | -- | -- | -- | -- | -- | 0     | 30    |
+| 21        | 1  | 0 | 2 | 2 | -- | -- | -- | -- | -- | -- | 0     | 225   |
+| 22        | 11 | 0 | 2 | 3 | -- | 1  | -- | -- | -- | -- | 0     | 12375 |
+| 23        | 29 | 0 | 1 | 3 | -- | -- | -- | -- | -- | -- | 1     | 10875 |
+| 24        | 11 | 0 | 1 | 3 | 1  | 1  | -- | -- | -- | -- | 0     | 28875 |
+| 25        | 29 | 0 | 0 | 3 | 1  | -- | -- | -- | -- | -- | 1     | 25375 |
+| 26        | 11 | 0 | 0 | 3 | 2  | 1  | -- | -- | -- | -- | 0     | 67375 |
+| 27        | 13 | 0 | 0 | 3 | 2  | -- | 1  | -- | -- | -- | 0     | 79625 |
+| 28        | 17 | 0 | 0 | 3 | 1  | -- | -- | 1  | -- | -- | 0     | 14875 |
+| 29        | 13 | 1 | 1 | 2 | 1  | -- | 1  | -- | -- | -- | 0     | 13650 |
+| 30        | 17 | 1 | 1 | 2 | -- | -- | -- | 1  | -- | -- | 0     | 2550  |
+| 31        | 13 | 2 | 2 | 1 | -- | -- | 1  | -- | -- | -- | 0     | 2340  |
+| 32        | 11 | 2 | 2 | 1 | -- | 1  | -- | -- | -- | -- | 0     | 1980  |
+| 33        | 29 | 2 | 1 | 1 | -- | -- | -- | -- | -- | -- | 1     | 1740  |
+| 34        | 11 | 2 | 1 | 1 | 1  | 1  | -- | -- | -- | -- | 0     | 4620  |
+| 35        | 29 | 2 | 0 | 1 | 1  | -- | -- | -- | -- | -- | 1     | 4060  |
+| 36        | 11 | 2 | 0 | 1 | 2  | 1  | -- | -- | -- | -- | 0     | 10780 |
+| 37        | 13 | 2 | 0 | 1 | 2  | -- | 1  | -- | -- | -- | 0     | 12740 |
+| 38        | 17 | 2 | 0 | 1 | 1  | -- | -- | 1  | -- | -- | 0     | 2380  |
+| 39        | 13 | 3 | 1 | 0 | 1  | -- | 1  | -- | -- | -- | 0     | 2184  |
+| 40        | 17 | 3 | 1 | 0 | -- | -- | -- | 1  | -- | -- | 0     | 408   |
+| 41        | 19 | 3 | 0 | 0 | -- | -- | -- | -- | 1  | -- | 0     | 152   |
+| 42        | 23 | 2 | 0 | 0 | -- | -- | -- | -- | -- | 1  | 0     | 92    |
+| 43        | 19 | 2 | 0 | 1 | -- | -- | -- | -- | 1  | -- | 0     | 380   |
+| 44        | 23 | 1 | 0 | 1 | -- | -- | -- | -- | -- | 1  | 0     | 230   |
+| 45        | 19 | 1 | 0 | 2 | -- | -- | -- | -- | 1  | -- | 0     | 950   |
+| 46        | 23 | 0 | 0 | 2 | -- | -- | -- | -- | -- | 1  | 0     | 575   |
+| 47        | 19 | 0 | 0 | 3 | -- | -- | -- | -- | 1  | -- | 0     | 2375  |
+| 48        | 11 | 0 | 0 | 3 | 1  | 1  | -- | -- | -- | -- | 0     | 9625  |
+| 49        | 13 | 0 | 0 | 3 | 1  | -- | 1  | -- | -- | -- | 0     | 11375 |
+| 50        | 17 | 0 | 0 | 3 | -- | -- | -- | 1  | -- | -- | 0     | 2125  |
 
 There are some optimizations that can be made. These are easily discernible from the
 FSM. (Hint: `S11` and `S29` looks like a good place to start.)
