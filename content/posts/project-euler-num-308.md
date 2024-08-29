@@ -337,7 +337,7 @@ the various fields with an "r".
 
 I also defined a few convenience macros that made setting the exponents and changing state much easier.
 
-So, in the following code I simply whatever state the register says I'm in.
+So, in the following code I simply go to whatever state the register says I'm in.
 
 {{< highlight lisp >}}
 (defun fractran (reg)
@@ -360,7 +360,7 @@ Remember what we can do in `S1`. We must follow the specific order:
     1.  Yes: Decrement 2, increment 3, increment 7, and stay in `S1`
     2.  No. Can I decrement 7?
         1.  Yes. Decrement 7, and stay in `S1`
-        2.  No. Increment 5 and move to `S1`
+        2.  No. Increment 5 and move to `S11`
 
 Also, in `S1` a check is made for a power of two.
 
