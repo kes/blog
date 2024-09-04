@@ -309,7 +309,11 @@ The documents say:
 
 > `add_library(<name> [<type>] [EXCLUDE_FROM_ALL] <sources>...)`
 
-Of course, nothing is easy. What should the name be after all? The documents are helpful:
+First off, notice that `sources` is plural. So, we can add all the source file that make up this
+library. At the moment we have two files that will go into this library. Nothing difficult there,
+at least so far. Perhaps a little later this might be changed. (Hint, we will change it.)
+
+Of course, nothing is totally easy. What should the `name` be after all? The documents are helpful:
 
 > The &lt;name&gt; corresponds to the logical target name and must be globally unique within a project. The
 > actual file name of the library built is constructed based on conventions of the native platform
@@ -392,3 +396,101 @@ Okay, so let's summarize.
 And that's it!
 
 Very cool!
+
+
+### Adding an Option {#adding-an-option}
+
+Now, we want to add an option to allow developers to choose to use a custom implementation, or the
+standard one. Remember that I said we might want to change the sources in the `add_library` line? It's
+coming up. But first we need to attend to other matters.
+
+Now, In the tutorial, the difference we have is between the cusotm square root and the standar
+one. The tutorial comments: "While for the tutorial there really isn't any need to do so, for larger
+projects this is a common occurrence." Yes, and CMake provides a handy way to make this happen.
+
+I'm going to run through this pretty quickly, since there's always the tutorial itself that
+can be referenced.
+
+The idea is that in the library, or that is, in the CMakeLists.txt for the library, we want to
+define an `option` that we can turn on or turn off. Then in the source code, a developer can
+check for that option and the compiler will include whichever code branch. Pretty slick, and
+easy to do with CMake.
+
+So, to Step2/MathFunctions/CMakeLists.txt add an option command:
+
+{{< highlight text >}}
+option(USE_MYMATH "Use tutorial provided math implementation" ON)
+{{< /highlight >}}
+
+That's pretty self explanatory. But, of course, that's just the option itself. We have to get
+it onto the compile command line. Here's how, with a `target_compile_definitions` command with
+a =USE<sub>MYMATH</sub> block:
+
+{{< highlight text >}}
+if (USE_MYMATH)
+  target_compile_definitions(MathFunctions PRIVATE "USE_MYMATH")
+endif()
+{{< /highlight >}}
+
+What may not be understood is that when we compile, we can set the `-D` flag, which creates a symbol
+that can be used by the developer and the preprocessor. `-D name=definition` is how it's given in the
+GNU manual. See: <https://gcc.gnu.org/onlinedocs/gcc/Preprocessor-Options.html>
+
+Now, this is available to the preprocessor, and in source you can write stuff like this:
+
+{{< highlight C >}}
+#include <cmath>
+#ifdef USE_MYMATH
+#  include "mysqrt.h"
+#endif
+
+# code ... code ... code
+
+#ifdef USE_MYMATH
+return detail::mysqrt(x);
+#else
+return std::sqrt(x);
+#endif
+
+# code ... code ... code
+{{< /highlight >}}
+
+It's as useful a technique as any for deveopment and debugging. For example, there might be a feature
+that you want to start getting into the production code base but you don't want to be available generally.
+This is one way to navigate that process.
+
+And yet, there's a bit of a problem. Suppose you're not using `MYMATH` for some build. In the current
+situation while the code will not be executed, it will still be compiled in. Why? Because it's in
+this line:
+
+{{< highlight text >}}
+add_library(MathFunctions MathFunctions.cxx mysqrt.cxx)
+{{< /highlight >}}
+
+Yup, it seems like we just added it there and now we want to remove it at least under certain
+conditions. But how to handle this?
+
+We're going to create an additional library to control the compilation and inclusion of mysqrt.cxx,
+and add it as a link library. So, within the MYMATH block:
+
+{{< highlight text >}}
+add_library(SqrtLibrary STATIC
+             mysqrt.cxx
+             )
+ target_link_libraries(MathFunctions PRIVATE SqrtLibrary)
+{{< /highlight >}}
+
+And we remove mysqrt.cxx from the add libraries command:
+
+{{< highlight text >}}
+add_library(MathFunctions MathFunctions.cxx)
+{{< /highlight >}}
+
+Be clear about the difference between `add library` which defines a library and its contents, versus
+`target_link_libraries` which specifies linkage of already existing libraries.
+
+So, with these changes, who is building can have whatever verson is wanted.
+
+But I have found that changing the option in the CMakeListings.txt file doesn't change
+things. Not sure why. But I can delete the cache, `build/CmakeFiles/cmake.check_cache`
+and then build, and it works as advertised.
