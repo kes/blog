@@ -34,8 +34,9 @@ So, of course, I can just use `-std=c+20` and it's all good. (Of course, GCC tak
 But what if you want the default to be C++11? Or, C++20? Is there nothing to be done? Do you just have to use the `-std` option?
 
 Well, there might be a few ways to overcome this, and depending on what you're trying to do, some
-will be better than others. But it turns our there's a way to control this using the GCC -`specs`
-option. Spec <https://gcc.gnu.org/onlinedocs/gcc-13.3.0/gcc/Spec-Files.html>
+will be better than others. (For example, in my use case at least, an alias is probably the best way
+of handling this.) But it turns our there's a way to control this using the GCC -`specs` option. Spec
+<https://gcc.gnu.org/onlinedocs/gcc-13.3.0/gcc/Spec-Files.html>
 
 > The spec strings built into GCC can be overridden by using the -specs= command-line switch to specify a spec file.
 
@@ -87,7 +88,9 @@ g++ -specs=./<myspecs file> foo.cpp -o foo
 And you're compiling with a the C++20 standard without having to put any switches on the command
 line. Very cool. Play around with this and prove it to yourself. But, yes, it works.
 
-But wait. This gets us nowhere &#x2013; we may as well just specify `-std`.
+But wait.
+
+This gets us nowhere &#x2013; we may as well just specify `-std`.
 
 If only we could put the specs file somwhere g++ would look for it!
 
