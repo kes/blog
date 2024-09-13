@@ -134,12 +134,140 @@ In one pass not only do we count (that's just incrementing the counter), but we 
 duplicates, including the current matrix (the `testThis` one), so none of them will cause any
 bother. And so, the array `m` will continue to grow smaller and smaller, until there's nothing in it.
 
+The more duplicates we have the better this approach works. Of course, worst-case &#x2026;.
+
 Initially, I was doing a loop with a control variable (your typical, `i` or `j)` but then it became
 clear that it was not needed. I decided to leave the `for` anyway, although a `while` might be
-preferable. The `for` with the first and third expressions omitted does focus one's attention.
+preferable. The `for` with the first and third expressions omitted does focus one's attention. (And,
+as we learned many years ago, the choice between `for` and `while` is arbitrary and a matter of personal
+preference.[^fn:1])
 
-As we learned many years ago, the choice between `for` and `while` is arbitrary and a matter of personal
-preference.[^fn:1]
+
+## Redoing Same {#redoing-same}
+
+We can implement `same` method as a lambda using a functional interface. `BiPredicate` is a functional
+interface (`public interface BiPredicate<T, U>`) that requires a method, `test,` to be implemented. The
+`test` method is declared in the BiPredicate interface just as you expect:
+
+`boolean test(T var1, U var2);`
+
+So, defining the lambda means supplying the body of `test`. Of course, you could define your own
+interface, but why? These generic functional interfaces are available for just such cases, and so
+there's no reason to reinvent the wheel. Here's what the definition looks like:
+
+{{< highlight java >}}
+BiPredicate<int [], int[]> p = (m1,m2) ->
+    ( // 0 degrees
+      m1[0] == m2[0] && m1[1] == m2[1] &&
+      m1[2] == m2[2] && m1[3] == m2[3]
+      ) ||
+    ( // 90 degrees
+      m1[0] == m2[1] && m1[1] == m2[3] &&
+      m1[2] == m2[0] && m1[3] == m2[2]
+      ) ||
+    ( // 180 degrees
+      m1[0] == m2[3] && m1[1] == m2[2] &&
+      m1[2] == m2[1] && m1[3] == m2[0]
+      ) ||
+    ( // 270 degrees
+      m1[0] == m2[2] && m1[1] == m2[0] &&
+      m1[2] == m2[3] && m1[3] == m2[1]
+      );
+{{< /highlight >}}
+
+And then, the `for` looks like this:
+
+{{< highlight java >}}
+for( ; 0 < matrices.length ;){
+    counter++;
+    int [] testThis = matrices[0];
+    matrices = Arrays.stream(matrices)
+        .filter(s-> !p.test(testThis,s))
+        .toArray(int[][]::new);
+}
+{{< /highlight >}}
+
+Of course, the results are the same. But there is some gained clarity and readability.
+
+
+## Other Possibilities {#other-possibilities}
+
+But we've go some nested loops here don't we?
+
+Filter, as optimized as it may be, will be going through the entire list on each iteration. For
+shorter arrays this will not be a problem. And for arrays with a high degree of duplication, and a
+greatly shrinking list on each iteration, this will not be a problem. Even so, it's hard to get away
+from the fear of <img src="/ltximg/whatisalambda_c0079969b7cdf0d140bd75815ecca9f116ee8fa5.png" alt="\(\mathcal{O}(n^2)\)" />. And, well, if that's the best we can do, that's the best we
+can do. But it's not.
+
+There is a better way. And it gets back to a hash table. If we could
+form a hash from the four rotations of a matrix, then we'd only touch
+each matrix one.
+
+So the idea is, get a matrix, form a hash value from the four rotational positions, and save the
+hash. For the next matrix, we do the same, get a hash value &#x2013; if the hash value matches any previously
+saved hash values, then we don't count it. Continue like that through the array.
+
+How to form the hash? We can form a unique hash by considering each of the four places
+a power of ten. So, `m[0]` could be 10<sup>0</sup>. `m[1]` 10<sup>1</sup>, `m[2]` 10<sup>2</sup>, and finally, `m[3]` 10<sup>3</sup>.
+
+So,
+
+<img src="/ltximg/whatisalambda_d1e5692a115d7e2848cbdb27a0786fa743b5fdea.png" alt="\(\LARGE\begin{pmatrix}
+1 &amp;amp; 2 \\
+3 &amp;amp; 4
+\end{pmatrix}
+\)" />
+
+At zero degree rotation this matrix has a hash value of:
+
+1 x 10<sup>0</sup> + 2 x 10<sup>1</sup> + 3 x 10<sup>2</sup> + 4 \* 10<sup>3</sup> = 4321
+
+And, as we rotate (90 degrees) the matrix we get:
+
+3 x 10<sup>0</sup> + 1 x 10<sup>1</sup> + 4 x 10<sup>2</sup> + 2 \* 10<sup>3</sup> = 2413
+
+And, again rotating (180 degrees) we get:
+
+4 x 10<sup>0</sup> + 3 x 10<sup>1</sup> + 2 x 10<sup>2</sup> + 1 \* 10<sup>3</sup> = 1234
+
+And, finally rotate again (270 degrees) we get:
+
+2 x 10<sup>0</sup> + 4 x 10<sup>1</sup> + 1 x 10<sup>2</sup> + 3 \* 10<sup>3</sup> = 3142
+
+So, we can simply take the maximum. All matrices
+that have the same maximum hash value are the duplicates.
+
+So, like this:
+
+{{< highlight java >}}
+  public static int calculateHash (int[] m){
+  // zero degrees
+  int hash0 = m[0] + (m[1] * 10^1) + (m[2] * 10^2) + (m[3] * 10^3);
+  // 90 degrees
+  int hash90 = m[2] + (m[0] * 10^1) + (m[3] * 10^2) + (m[1] * 10^3);
+  // 180 degrees
+  int hash180 = m[3] + (m[2] * 10^1) + (m[1] * 10^2) + (m[0] * 10^3);
+  // 270 degrees
+  int hash270 = m[1] + (m[3] * 10^1) + (m[0] * 10^2) + (m[2] * 10^3);
+  int maxHash = Math.max(Math.max(Math.max(hash0, hash90),hash180), hash270);
+  return maxHash;
+}
+{{< /highlight >}}
+
+And then the body of the main function becomes simply:
+
+{{< highlight java >}}
+Set<Integer> set = new HashSet<>();
+for(int [] x : matrices){
+    set.add(calculateHash(x));
+}
+System.out.println("Set Count: " + set.size());
+{{< /highlight >}}
+
+And of course, set.add does not add duplicates.
+
+Okay, that's enough.
 
 That was fun!
 
