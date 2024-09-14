@@ -34,7 +34,7 @@ So, of course, I can just use `-std=c+20` and it's all good. (Of course, GCC tak
 But what if you want the default to be C++11? Or, C++20? Is there nothing to be done? Do you just have to use the `-std` option?
 
 Well, there might be a few ways to overcome this, and depending on what you're trying to do, some
-will be better than others. (For example, in my use case at least, an alias is probably the best way
+will be better than others. (For example, in my use case at least, an alias is undoubtedly the best way
 of handling this.) But it turns our there's a way to control this using the GCC -`specs` option. Spec
 <https://gcc.gnu.org/onlinedocs/gcc-13.3.0/gcc/Spec-Files.html>
 
@@ -136,3 +136,6 @@ And after setting the spec file, it just works, and with no command line options
 Excellent!
 
 I was inspired to pursue this by this:  <https://stackoverflow.com/questions/41648978/change-default-c-standard-in-g>
+
+A great introduction to gcc is Brian Gough's tutorial. He is no longer updating but
+it is still a great read. He's put it on github, here: <https://github.com/briangough/gccintro>
