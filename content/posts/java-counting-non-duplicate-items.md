@@ -243,13 +243,13 @@ So, like this:
 {{< highlight java >}}
   public static int calculateHash (int[] m){
   // zero degrees
-  int hash0 = m[0] + (m[1] * 10^1) + (m[2] * 10^2) + (m[3] * 10^3);
+  int hash0 = m[0] + (m[1] * 10) + (m[2] * 100) + (m[3] * 1000);
   // 90 degrees
-  int hash90 = m[2] + (m[0] * 10^1) + (m[3] * 10^2) + (m[1] * 10^3);
+  int hash90 = m[2] + (m[0] * 10) + (m[3] * 100) + (m[1] * 1000);
   // 180 degrees
-  int hash180 = m[3] + (m[2] * 10^1) + (m[1] * 10^2) + (m[0] * 10^3);
+  int hash180 = m[3] + (m[2] * 10) + (m[1] * 100) + (m[0] * 1000);
   // 270 degrees
-  int hash270 = m[1] + (m[3] * 10^1) + (m[0] * 10^2) + (m[2] * 10^3);
+  int hash270 = m[1] + (m[3] * 10) + (m[0] * 100) + (m[2] * 1000);
   int maxHash = Math.max(Math.max(Math.max(hash0, hash90),hash180), hash270);
   return maxHash;
 }
@@ -266,6 +266,24 @@ System.out.println("Set Count: " + set.size());
 {{< /highlight >}}
 
 And of course, set.add does not add duplicates.
+
+Using 25000 randomly generate matrices I compared time. For the filter method:
+
+{{< highlight text >}}
+real	0m0.310s
+user	0m0.317s
+sys	0m0.087s
+{{< /highlight >}}
+
+And for the hash method:
+
+{{< highlight text >}}
+real	0m0.122s
+user	0m0.135s
+sys	0m0.050s
+{{< /highlight >}}
+
+The user row is what you want to look at. And that's a pretty significant difference.
 
 Okay, that's enough.
 
