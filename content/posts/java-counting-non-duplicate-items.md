@@ -285,7 +285,30 @@ sys	0m0.050s
 
 The user row is what you want to look at. And that's a pretty significant difference.
 
-Okay, that's enough.
+UPDATE: I went ahead and implemented the hash approach in C. The main loop is:
+
+{{< highlight c >}}
+for (int i = 0; i < MSIZE; i++){
+  hashValue = calculateHash(matrices[i]);
+  if (hashStore[hashValue] == 0){
+    counter++;
+    hashStore[hashValue] = 1;
+  }
+ }
+{{< /highlight >}}
+
+and timing 25000 randomly generatated
+matrices yields:
+
+{{< highlight text >}}
+real	0m0.008s
+user	0m0.008s
+sys	0m0.001s
+{{< /highlight >}}
+
+&#x2026; and that's more than "pretty significant." Wow!
+
+Okay, that's (really) enough.
 
 That was fun!
 
