@@ -169,3 +169,5 @@ Now, when you start emacs, in the **scratch** buffer you can run
 
 (my-get-number)
 {{< /highlight >}}
+
+Have fun!
