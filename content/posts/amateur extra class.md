@@ -43,7 +43,7 @@ So, starting from zero, to get the Technician, you'll need to learn 423 question
 
 ## Study Guides {#study-guides}
 
-The American Radio Rely publishes study guides for each license class, as well as other books on radio and electrical theory at the [ARRL store](https://home.arrl.org/action/Shop/Store).
+The American Radio Relay League publishes study guides for each license class, as well as other books on radio and electrical theory at the [ARRL store](https://home.arrl.org/action/Shop/Store).
 
 Many sites offer practice examinations for free. Here's one: [QRZ.com](https://www.qrz.com/) and here's another: [hamstudy.org](https://hamstudy.org/).
 
