@@ -2,6 +2,7 @@
 title: "Leetcode Algorithms 1"
 author: ["Karl Stump"]
 date: 2024-11-22
+tags: ["CPP", "Leetcode"]
 draft: false
 ---
 
