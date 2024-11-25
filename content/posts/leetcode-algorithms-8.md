@@ -1,5 +1,5 @@
 ---
-title: "Leet Code Algorithms 8"
+title: "Leetcode Algorithms 8"
 author: ["Karl Stump"]
 date: 2024-11-24
 draft: false
