@@ -2,6 +2,7 @@
 title: "Leetcode Algorithms 10"
 author: ["Karl Stump"]
 date: 2024-11-25
+tags: ["CPP", "Leetcode"]
 draft: false
 ---
 

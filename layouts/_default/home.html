@@ -1,14 +1,8 @@
 {{ define "main" }}
 <div id="home" >
-  <h1>Posts</h1>
-  <ul class="posts">
-  {{ .Content }}
-  {{- range site.RegularPages -}}
-  <li>
-    {{- partial "article.html" . -}} 
-  </li>
-  {{- end -}}
-  </ul>
+  {{ range .Site.Sections }}
+  <h2><a href="{{ .RelPermalink }}">{{ .LinkTitle }}</a></h2>
+{{ end }}
 </div>
 {{ end }}
 

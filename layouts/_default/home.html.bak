@@ -6,7 +6,7 @@
   {{- range site.RegularPages -}}
   <li>
     <p>{{- $ -}} </p>
-        <p>{{- . -}} </p>
+    <p>{{- . -}} </p>
     {{- partial "article.html" . -}} 
   </li>
   {{- end -}}
