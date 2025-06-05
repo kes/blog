@@ -181,4 +181,4 @@ cc hello.c
 what test Now? hello world -- now, test the tangle!No, really, now!
 ```
 
-Easy!
+Easy-peasy!
