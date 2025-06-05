@@ -178,7 +178,7 @@ cc hello.c
 {{< /highlight >}}
 
 ```text
-what test Now? hello world -- now, test the tangle!No, really, now!
+hello world
 ```
 
 Easy-peasy!
