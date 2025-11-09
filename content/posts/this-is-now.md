@@ -4,10 +4,11 @@ author: ["Karl Stump"]
 date: 2024-08-10
 tags: ["C", "programming"]
 draft: false
+math: true
 ---
 
 Some time ago, I was on a reddit thread and someone commented that they
-knew python and wondered if they should learn C &#x2026;
+knew python and wondered if they should learn C ...
 
 I thought everybody knew C!   ;)
 
@@ -18,7 +19,7 @@ my original copy is long gone but I have the second edition.[^fn:1]
 
 The K&amp;R book is a classic and it's pretty easy to recommend to anyone interested in computer
 science, software development, or just plain ol' programming. If you're reading this sentence, then
-yes, let me personally recommend it to you &#x2014; and you should read it sooner than later!
+yes, let me personally recommend it to you --- and you should read it sooner than later!
 
 As a language, the longer you know C the better you like it. Just it says in K&amp;R,
 
@@ -28,7 +29,7 @@ As a language, the longer you know C the better you like it. Just it says in K&a
 
 Yup, I agree!
 
-K&amp;R begins with chapter one: "A Tutorial Introduction" &#x2014; and just looking at it, I just thought it would
+K&amp;R begins with chapter one: "A Tutorial Introduction" --- and just looking at it, I just thought it would
 be cool to skim through it, look at the programs, and just soak-in some cool 70's tech literature. It doesn't get any
 better! A language that is still going strong 50 years later has to have something going for it!
 
@@ -37,7 +38,7 @@ start it? I don't know.
 
 But before we experience the coolness of C we'll need a compiler!
 
-Back in the day, getting access to a compiler was not that easy. Compilers, RDBMS, OSes &#x2026;. believe
+Back in the day, getting access to a compiler was not that easy. Compilers, RDBMS, OSes .... believe
 me, a closed source world was not fun! Now, it's all free, and a machine can be had for not too
 much. May be we do owe a debt of gratitude to Richard Stallman!
 
@@ -82,7 +83,7 @@ main() {
 {{< /highlight >}}
 
 I love how K&amp;R gives such an understated, unassuming, program. Not only does the string not
-capitalization or punctuation, not so bad, but hey, nothing, there's no return type in the
+have capitalization or punctuation, but also there's no return type in the
 signature! Man, this is really bare bones. No need to be too fastidious, I suppose.
 
 I do wonder what they were thinking all those years ago when they chose this as their first example
@@ -94,20 +95,17 @@ language put together by us hackers."
 
 Yup, there's definitely some coolness here.
 
-But wait, this may have compiled in the 70's &#x2014; but will it compile today?
+But wait, this may have compiled in the 70's --- but will it compile today?
 
-<a id="code-snippet--shared-session"></a>
-{{< highlight bash >}}
-  exec 2>&1
-#  alias cc="gcc -x c -w"
-  ls
-  echo PID: "$$"
-{{< /highlight >}}
-
-In fact it will.Just as K&amp;R shows, `cc hello.c`.
+In fact it will.Just as K&amp;R shows, `cc hello.c`
 
 However, with today's compile command, `cc`, which on Linux points to `gcc` (which stands for GNU C Compiler), you'll
 get warnings. Something like this:
+
+<a id="code-snippet--getWarningForMissingReturnType"></a>
+{{< highlight bash >}}
+cc hello.c
+{{< /highlight >}}
 
 ```text
 hello.c:2:1: warning: return type defaults to ‘int’ [-Wimplicit-int]
@@ -115,14 +113,10 @@ hello.c:2:1: warning: return type defaults to ‘int’ [-Wimplicit-int]
       | ^~~~
 ```
 
-Notice that this is just a warning. (You still get an `a.out` file.) If you don't want to see these
-warnings you can alias cc like this: alias cc="gcc -w"/. And for that matter if you want to compile
-files without the `.c` extension you could alias like this: alias cc="gcc -x c -w" The `-w` flag says to
-ignore warnings, and the `-x` flag says to use the C compiler. So, it's up to you. I think I'll just
+Notice that this is just a warning. (You still get an `a.out` file.) If you don't want to (ever) see these warnings you can alias cc like this: alias cc="gcc -w"/. And for that matter if you want to compile files without the `.c` extension you could alias like this: alias cc="gcc -x c -w" The `-w` flag says to ignore warnings, and the `-x` flag says to use the C compiler. So, it's up to you. I think I'll just
 leave well-enough alone and put up with seeing the warnings.
 
-Okay, where were we? Oh, yes, compiling creates an executable file called `a.out`. You may have to
-`chmod` it (`man chmod`), like this:
+Okay, where were we? Oh, yes, compiling creates an executable file called `a.out`. You may have to `chmod` it (`man chmod`), like this:
 
 {{< highlight bash >}}
 chmod 755 a.out
@@ -133,10 +127,6 @@ And then run it:
 {{< highlight bash >}}
 ./a.out
 {{< /highlight >}}
-
-```text
-hello world
-```
 
 And here's the output:
 
@@ -159,7 +149,12 @@ main() {
 }
 {{< /highlight >}}
 
-And now, compile it and see what happens.
+Now, I'll compile with `cc hello.c` and see what happens.
+
+<a id="code-snippet--show-error"></a>
+{{< highlight bash >}}
+cc hello-error.c
+{{< /highlight >}}
 
 {{< highlight text >}}
 hello-error.c:1:1: warning: return type defaults to ‘int’ [-Wimplicit-int]
@@ -178,52 +173,15 @@ hello-error.c:2:3: warning: incompatible implicit declaration of built-in functi
 hello-error.c:2:3: note: include ‘<stdio.h>’ or provide a declaration of ‘printf’
 {{< /highlight >}}
 
-{{< highlight C >}}
-int main() {
-  printf("Hello World again\n");
-}
-{{< /highlight >}}
+Yup. Looks like some problems. But interestingly these are only warnings and informational messages. Learning to read these messages is an
+important part of gaining skill in working with C. The compiler helpfully tells us that we have an `implicit declaration of function
+'printf'`. Looking at the index of `K&R` implicit declaration is covered on pages 27, 72, and 201.
 
-Now, I'll compile with `cc hello.c` and see what happens.
+Also, the compiler tells us that `<stdio.h>` provides a declaration of `printf`, and then has the line `+++ | +#include <stdio.h>`. It doesn't take too much imagination that this means that we should include this line in our source code. And, indeed, the last line of output gives us explicit instructions to do just that.
 
-{{< highlight text >}}
-test.c: In function ‘main’:
-test.c:3:3: warning: implicit declaration of function ‘printf’ [-Wimplicit-function-declaration]
-    3 |   printf("Hello World again\n");
-      |   ^~~~~~
-test.c:1:1: note: include ‘<stdio.h>’ or provide a declaration of ‘printf’
-  +++ |+#include <stdio.h>
-    1 |
-test.c:3:3: warning: incompatible implicit declaration of built-in function ‘printf’ [-Wbuiltin-declaration-mismatch]
-    3 |   printf("Hello World again\n");
-      |   ^~~~~~
-test.c:3:3: note: include ‘<stdio.h>’ or provide a declaration of ‘printf’
-{{< /highlight >}}
+Nevertheless, `gcc` did create an executable.
 
-Yup. Looks like some problems. But interestingly these are only warnings
-and informational messages. Learning to read these messages is an
-important part of gaining skill in working with C. The compiler
-helpfully tells us that we have an `implicit declaration of function
-'printf'`. Looking at the index of `K&R` implicit declaration is
-covered on pages 27, 72, and 201.
-
-Also, the compiler tells us that `<stdio.h>` provides a declaration of `printf`, and then has
-the line `+++ | +#include <stdio.h>`. It doesn't take too much imagination that this means that we
-should include this line in our source code. And, indeed, the last line of output gives us explicit
-instructions to do just that.
-
-Nevertheless, `gcc` did create an executable. We'll do an `ls` command.
-
-<a id="code-snippet--ls-output"></a>
-{{< highlight bash >}}
-ls -l a.out
-{{< /highlight >}}
-
-And sure enough, there it is.
-
-```text
--rwxrwxr-x 1 kes kes 15952 Aug 21 19:39 a.out
-```
+What type file is an `a.out` anyway?
 
 What type of file is it? Let's run the `file` command:
 
@@ -235,26 +193,20 @@ file a.out
 The `file` command will attempt to classify a file. See `man file` for more details. Here's the output from the command.
 
 ```text
-a.out: ELF 64-bit LSB pie executable, x86-64, version 1 (SYSV), dynamically linked, interpreter /lib64/ld-linux-x86-64.so.2, BuildID[sha1]=ab17dc2646ecd587c86aa8328ff3821ca535f79f, for GNU/Linux 3.2.0, not stripped
+a.out: ELF 64-bit LSB pie executable, x86-64, version 1 (SYSV), dynamically linked, interpreter /lib64/ld-linux-x86-64.so.2, BuildID[sha1]=085fdccdc6a2e11d5900d3528fa1940c46972a95, for GNU/Linux 3.2.0, not stripped
 ```
 
-Lots to try and understand there, but for now just leave it.
+At the very least we see that it's an executable.
 
 We could continue to remove other lines and see the compiler messages. But lets move onto the next exercise.
 
 
 ## Escape sequences {#escape-sequences}
 
-This exercise draws our attention to the funny backslash-n that is in
-the string we're printing out. '' is an escape sequence and it
-represents the single character newline. Of course, in the output of a
-string we don't see the newline character, but we do see its
-results. K&amp;R want us to know that there are other such types of
-characters. Namely, , , for backspace, and tab characters, and the
-escape sequence \\" that allow you to embed double quotes in a double
-quoted string, and even the escape sequence \\\\ that allows you to embed
-a backslash in a string. You can find an [ASCII chart here](https://en.wikipedia.org/wiki/ASCII). You can experiment
-with these escape sequences in the hello world program.
+This exercise draws our attention to the funny backslash-n that is in the string we're printing out. '\n' is an escape sequence and it
+represents the single character newline. Of course, in the output of a string we don't see the newline character, but we do see its
+results. K&amp;R want us to know that there are other such types of characters. Namely, \b, \t, for backspace, and tab characters, and the
+escape sequence \\" that allow you to embed double quotes in a double quoted string, and even the escape sequence \\\\ that allows you to embed a backslash in a string. You can find an [ASCII chart here](https://en.wikipedia.org/wiki/ASCII). You can experiment with these escape sequences in the hello world program.
 
 
 ## Celsius to Fahrenheit Exercise 1-3 {#celsius-to-fahrenheit-exercise-1-3}
@@ -292,7 +244,7 @@ int main(){
 
 One of the most important points to be made in this section is the difference between integer and
 floating point division. In the text, K&amp;R, make a point to force floating point division by using
-numeric literals 5.0 and 9.0. "We were unable to use `5/9` &#x2026; because integer division would truncate
+numeric literals 5.0 and 9.0. "We were unable to use `5/9` ... because integer division would truncate
 it to zero." In fact, only one of the operands has to be floating point to force the conversion of
 the remaining operand to floating point.
 
@@ -344,6 +296,8 @@ int main()
 }
 {{< /highlight >}}
 
+Compiling, we can then do something like:
+
 <a id="code-snippet--cat-password"></a>
 {{< highlight bash >}}
 cat /etc/passwd | a.out | tail -5
@@ -371,7 +325,7 @@ grep "#define EOF" /usr/include/stdio.h
 #define EOF (-1)
 ```
 
-So, it's defined as negative 1 &#x2013; can we see the declaration of getchar?
+So, it's defined as negative 1 -- can we see the declaration of getchar?
 
 Of course:
 
@@ -389,13 +343,9 @@ grep "getchar (" -A1 -B5  /usr/include/stdio.h
 extern int getchar (void);
 ```
 
-So, getchar returns an int. Which seems a bit odd. After all the name of the function is
-getchar. Why does it not return a `char`. In order to indicate EOF getchar must return a value that
-could never occur in a character set. Thus EOF fits the bill, and therefore, the variable c must be
-an `int`.
+So, getchar returns an int. Which seems a bit odd. After all the name of the function is getchar. Why does it not return a `char`. In order to indicate EOF getchar must return a value that could never occur in a character set. Thus EOF fits the bill, and therefore, the variable c must be an `int`.
 
-But K&amp;R make another interesting point. The program is a bit verbose. Experienced C programmers would
-write it differently, with a different idiom. Like this.
+But K&amp;R make another interesting point. The program is a bit verbose. Experienced C programmers would write it differently, with a different idiom. Like this.
 
 {{< highlight C "linenos=true, linenostart=1" >}}
 #include <stdio.h>
@@ -408,38 +358,8 @@ int main()
 }
 {{< /highlight >}}
 
-K&amp;R remind us that in C an assignment is an expression and has a value. Thus c = getchar() not only
-assign a value to c, but expression itself is a value, and in this instance, the value is tested
-against EOF. Note that precedence is an issue. The parentheses around c = getchar() are necessary
-because the precedence of != is higher than =.
+K&amp;R remind us that in C an assignment is an expression and has a value. Thus `c = getchar()` not only assign a value to c, but the expression itself is a value, and in this instance, the value is tested against EOF. Note that precedence is an issue. The parentheses around `c = getchar()` are necessary because the precedence of `!=` is higher than `=`.
 
-
-## Word counting {#word-counting}
-
-{{< highlight C "linenos=true, linenostart=1" >}}
-#include <stdio.h>
-#define IN  1 /* inside a word */
-#define OUT 0 /* outside a word */
-int main()
-{
-  int c, nl, nw, nc, state;
-  state = OUT;
-  nl = nw = nc = 0;
-  while ((c = getchar()) != EOF) {
-    ++nc;
-    if (c == '\n')
-      ++nl;
-    if (c == ' ' || c == '\n' || c == '\t')
-      state = OUT;
-    else if (state == OUT) {
-      state = IN;
-      ++nw;
-    }
-  }
-  printf("%d %d %d\n", nl, nw, nc);
-}
-{{< /highlight >}}
-
-(&#x2026; to be continued &#x2026;)
+That's enough for now. Great fun!
 
 [^fn:1]: Brian W. Kernighan and Dennis M. Ritchie, <i>The C Programming Language</i>, 2nd ed (Englewood Cliffs, N.J: Prentice Hall, 1988).

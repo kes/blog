@@ -1,0 +1,48 @@
+baseURL = "/"
+languageCode = "en-us"
+theme = "terminal"
+pagination.pagerSize = 15
+
+[params]
+  contentTypeName = "posts"
+  themeColor = "orange"
+  showMenuItems = 15
+  fullWidthTheme = false
+  centerTheme = true
+  math = true
+
+[languages]
+  [languages.en.params]
+    languageName = "English"
+    title = "Karl Stump"
+    subtitle = "various ruminations and other fun"
+    owner = "Karl Stumm"
+    keywords = ""
+    copyright = "© 2025 Karl Stump"
+    menuMore = "Show more"
+    readMore = "Read more"
+    readOtherPosts = "Read other posts"
+    newerPosts = "Newer posts"
+    olderPosts = "Older posts"
+    missingContentMessage = "Page not found..."
+    missingBackButtonLabel = "Back to homepage"
+
+    [languages.en.params.logo]
+      logoText = "Karl Stump"
+      logoHomeLink = "/"
+
+    [languages.en.params.menu]
+      [[languages.en.menu.main]]
+        identifier = "about"
+        name = "About"
+        url = "/about/about/"
+
+      [[languages.en.menu.main]]
+	  identifier = "leetcode"
+	  name = "Leet Code"
+	  url = "/leetcode/"
+
+
+[markup.goldmark.renderer]
+	unsafe = true
+

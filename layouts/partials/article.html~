@@ -1,4 +1,0 @@
-{{- define "article" -}}
-<span>{{ .Date | time.Format ":date_medium" }}</span> &raquo;
-<a href="{{ .RelPermalink }}">{{ .LinkTitle }}</a>
-{{- end -}}

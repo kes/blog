@@ -1,0 +1,18 @@
+{{/* ───────────────────────────────────────────────
+     Extended Head Partial for Hugo + Terminal Theme
+     Enables MathJax v3 (CSP-safe) only when math=true
+     Place in: layouts/partials/extended_head.html
+──────────────────────────────────────────────── */}}
+
+{{ if or .Params.math .Site.Params.math }}
+  <!-- MathJax configuration must load BEFORE the library -->
+  <script src="{{ "js/mathjax-config.js" | absURL }}"></script>
+
+  <!-- Load MathJax v3 (asynchronously is fine now) -->
+  <script
+    id="MathJax-script"
+    async
+    src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js">
+  </script>
+{{ end }}
+

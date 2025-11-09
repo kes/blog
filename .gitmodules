@@ -1,3 +1,6 @@
 [submodule "public"]
 	path = public
 	url = git@github.com:kes/kes.github.io.git
+[submodule "themes/terminal"]
+	path = themes/terminal
+	url = https://github.com/panr/hugo-theme-terminal.git
