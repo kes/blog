@@ -283,37 +283,51 @@ And here's the response:
 
 I take it that with the "Great prompt" that `ChatGPT` is indicating that it knows all the exercises in the book. Amazing.
 
-I won't give the code here, since you can see it in the repository.
+From here on, I won't go into a lot of details, just things that stood aout to me. If interested you can see all the details in the repository.
 
-Additional testing, property tests were requested, and this resulted in the following response:
+Additional property tests were requested, and this resulted in the following response:
 
-> Love it—property-style tests are perfect here. We’ll add a cmocka test module that generates randomized lines and checks invariants that should always hold for any string under detab_line and entab_line.
+> Love it—property-style tests are perfect here. We’ll add a cmocka test module that generates randomized lines and checks invariants that should always hold for any string under `detab_line` and `entab_line`.
 
-And then the following from `ChatGPT`:
+"Love it" -- amazing. What a neat response!
+
+And then the following details from `ChatGPT`:
 
 > **Chosen invariants**
 >
 > 1.  Round-trip visual equivalence via detab:
 >     For any input s, expanding tabs to spaces once gives a concrete, canonical layout:
 >
->     D(s) = detab_line(s)
+>     \\( D(s) = detab\_line(s) \\)
 >
 >     If we entab and then detab again, the fully expanded view should be identical:
 >
->     detab_line(entab_line(D(s))) == D(s)
+>     \\( detab\_line(entab\_line(D(s))) == D(s) \\)
 >
->     (Equivalently: detab(entab(detab(s))) == detab(s).)
+>     (Equivalently: \\( detab(entab(detab(s))) == detab(s) \\) . )
 >     This asserts that entab_line preserves alignment and detab_line is idempotent on already-detabbed strings.
 >
 > 2.  No tabs after detab:
->     Output of detab_line must not contain '\t'.
+>     Output of `detab_line` must not contain `'\t'`.
 >
 > 3.  Optional sanity: bounded growth
->     entab_line never increases the count of spaces for runs that cross tab stops when using same tab width and no literal \t present (not strictly required, so we won’t assert it globally—just FYI).
+>     `entab_line` never increases the count of spaces for runs that cross tab stops when using same tab width and no literal \t present (not strictly required, so we won’t assert it globally—just FYI).
 >
 > Below is a new `cmocka` test file plus `Makefile` additions. It reuses your existing detab_lib.c and entab_lib.c (no CLI/main linked).
 
-This is fantastic. Again, if you want the details see the repository.
+And more details from `ChatGPT`:
+
+> **Why these properties are strong**
+>
+> 1.  \\( D(E(D(s))) == D(s) \\) is a robust alignment invariant: anything entab does must be lossless with respect to the “visual layout” that detab defines. If this ever fails, either `entab` emitted an incorrect mix of tabs/spaces, or `detab` miscomputed column movement.
+>
+> 2.  No tabs after `detab` confirms that detab truly expands.
+>
+> 3.  `Idempotence` ensures `detab` is stable on tab-free input.
+
+And to be sure, `idempotence` is: for some function \\( f(x) \\), then   \\[ f(f(x))=f(x) \\]
+
+This is totally fantastic. Again, if you want the details see the repository.
 
 After all is said and done, here is a run of the tests:
 
