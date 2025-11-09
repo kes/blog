@@ -1,4 +1,4 @@
-baseURL = "/"
+baseURL = "https://kes.github.io/"
 languageCode = "en-us"
 theme = "terminal"
 pagination.pagerSize = 15

@@ -4,6 +4,7 @@ author: ["Karl Stump"]
 date: 2025-11-08
 tags: ["C", "programming", "ChatGPT"]
 draft: false
+math: true
 ---
 
 I wanted to experiment with `ChatGPT` and programming. So, I thought I would just start with an exercise from Kernighan and Ritchie's _The C Programming Language_.
@@ -16,7 +17,7 @@ And I got the following reply:
 
 > Love this exercise. Here’s a clean, portable detab implementation (C17), plus a lightweight test harness you can run with plain Bash. Tab stops default to every 8 columns, and you can optionally override with -t
 
-In the few weeks that I've been using `ChatGPT` I have been surprised by responses a number of times. It's difficult not to anthropomorphize many of them. I have shared some of the responses with non-technical friends who make an apt observation: "It's like talking to a friend, only they're really, really, smart!" I have to laugh at that, and yes, I agree.  The "Love this exercise," seems to emphasize familiarity with the exercise, perhaps the entire book &#x2013; I will use this familiarity later.
+In the few weeks that I've been using `ChatGPT` I have been surprised by responses a number of times. It's difficult not to anthropomorphize many of them. I have shared some of the responses with non-technical friends who make an apt observation: "It's like talking to a friend, only they're really, really, smart!" I have to laugh at that, and yes, I agree.  The "Love this exercise," seems to emphasize familiarity with the exercise, perhaps the entire book -- I will use this familiarity later.
 
 What code came back? The following:
 
@@ -98,13 +99,13 @@ CFLAGS  := -std=c17 -O2 -Wall -Wextra -Wpedantic
 all: detab
 
 detab: detab.c
-        $(CC) $(CFLAGS) -o $@ $<
+	$(CC) $(CFLAGS) -o $@ $<
 
 clean:
-        rm -f detab
+	rm -f detab
 
 test: detab
-        ./tests/run.sh
+	./tests/run.sh
 {{< /highlight >}}
 
 Perfect! What about testing? The following `bash` test harness was created.
@@ -189,7 +190,7 @@ make test
 
 > Notes &amp; gotchas
 >
-> Column math: spaces = tabWidth - (col % tabWidth). Reset col on (and optionally ).
+> Column math: spaces = tabWidth - (col % tabWidth). Reset col on \n (and optionally \r).
 >
 > Non-printing/backspace: The K&amp;R exercise doesn’t require special handling for backspace or multibyte characters. The implementation treats every non-newline byte (including UTF-8 bytes) as one column; that’s fine for the exercise.
 >
@@ -278,7 +279,7 @@ This was so easy, the code, the makefile, the tests, that I decide to do the nex
 
 And here's the response:
 
-> Great prompt—yes, Exercise 1.21 is entab: replace runs of blanks with the minimum number of tabs and spaces to get the same alignment (assume tab stops every 8 columns). Below is a drop-in implementation that mirrors the detab architecture you just built: a pure function (entab<sub>line</sub>) + a tiny CLI wrapper + cmocka tests + Makefile targets.
+> Great prompt—yes, Exercise 1.21 is entab: replace runs of blanks with the minimum number of tabs and spaces to get the same alignment (assume tab stops every 8 columns). Below is a drop-in implementation that mirrors the detab architecture you just built: a pure function (entab_line) + a tiny CLI wrapper + cmocka tests + Makefile targets.
 
 I take it that with the "Great prompt" that `ChatGPT` is indicating that it knows all the exercises in the book. Amazing.
 
@@ -286,7 +287,7 @@ I won't give the code here, since you can see it in the repository.
 
 Additional testing, property tests were requested, and this resulted in the following response:
 
-> Love it—property-style tests are perfect here. We’ll add a cmocka test module that generates randomized lines and checks invariants that should always hold for any string under detab<sub>line</sub> and entab<sub>line</sub>.
+> Love it—property-style tests are perfect here. We’ll add a cmocka test module that generates randomized lines and checks invariants that should always hold for any string under detab_line and entab_line.
 
 And then the following from `ChatGPT`:
 
@@ -295,22 +296,22 @@ And then the following from `ChatGPT`:
 > 1.  Round-trip visual equivalence via detab:
 >     For any input s, expanding tabs to spaces once gives a concrete, canonical layout:
 >
->     D(s) = detab<sub>line</sub>(s)
+>     D(s) = detab_line(s)
 >
 >     If we entab and then detab again, the fully expanded view should be identical:
 >
->     detab<sub>line</sub>(entab<sub>line</sub>(D(s))) == D(s)
+>     detab_line(entab_line(D(s))) == D(s)
 >
 >     (Equivalently: detab(entab(detab(s))) == detab(s).)
->     This asserts that entab<sub>line</sub> preserves alignment and detab<sub>line</sub> is idempotent on already-detabbed strings.
+>     This asserts that entab_line preserves alignment and detab_line is idempotent on already-detabbed strings.
 >
 > 2.  No tabs after detab:
->     Output of detab<sub>line</sub> must not contain ''.
+>     Output of detab_line must not contain '\t'.
 >
 > 3.  Optional sanity: bounded growth
->     entab<sub>line</sub> never increases the count of spaces for runs that cross tab stops when using same tab width and no literal present (not strictly required, so we won’t assert it globally—just FYI).
+>     entab_line never increases the count of spaces for runs that cross tab stops when using same tab width and no literal \t present (not strictly required, so we won’t assert it globally—just FYI).
 >
-> Below is a new `cmocka` test file plus `Makefile` additions. It reuses your existing detab<sub>lib.c</sub> and entab<sub>lib.c</sub> (no CLI/main linked).
+> Below is a new `cmocka` test file plus `Makefile` additions. It reuses your existing detab_lib.c and entab_lib.c (no CLI/main linked).
 
 This is fantastic. Again, if you want the details see the repository.
 
