@@ -21,7 +21,7 @@ In the few weeks that I've been using `ChatGPT` I have been surprised by respons
 
 What code came back? The following:
 
-{{< highlight C >}}
+```C
 // detab.c — replace tabs with spaces to the next tab stop (default width 8)
 // Usage: ./detab            (tab width = 8)
 //        ./detab -t 4       (tab width = 4)
@@ -87,11 +87,11 @@ int main(int argc, char **argv) {
     }
     return EXIT_SUCCESS;
 }
-{{< /highlight >}}
+```
 
 Utterly fantastic. What else? A `Makefile`, of course.
 
-{{< highlight makefile >}}
+```makefile
 CC      := gcc
 CFLAGS  := -std=c17 -O2 -Wall -Wextra -Wpedantic
 
@@ -106,11 +106,11 @@ clean:
 
 test: detab
 	./tests/run.sh
-{{< /highlight >}}
+```
 
 Perfect! What about testing? The following `bash` test harness was created.
 
-{{< highlight bash >}}
+```bash
   #!/usr/bin/env bash
 set -euo pipefail
 
@@ -174,17 +174,17 @@ run_case "CR resets column" "" \
 
 printf "\nSummary: %d passed, %d failed\n" "$pass" "$fail"
 [[ $fail -eq 0 ]]
-{{< /highlight >}}
+```
 
 And helpfully, `ChatGPT` also gave me a, "How to Run:"
 
-{{< highlight bash >}}
+```bash
 mkdir -p tests
 # save detab.c, Makefile, tests/run.sh as shown
 chmod +x tests/run.sh
 make
 make test
-{{< /highlight >}}
+```
 
 `ChatGPT` also gave me a "Notes and Gotchas" section:
 
@@ -210,7 +210,7 @@ And,
 
 While I like the bash test harness, I did not feel that it was best to go in that direction. So, after some discussion with `ChatGPT`, I opted to go with `cmocka` (and admittedly, it was a bit of a "flip o' the coin"). This required some changes to the Makefile and the source, which, if interested you can see my repository. Here are the resulting tests:
 
-{{< highlight C >}}
+```C
 #include <stdarg.h>
 #include <stddef.h>
 #include <setjmp.h>
@@ -271,7 +271,7 @@ int main(void) {
     };
     return cmocka_run_group_tests(tests, NULL, NULL);
 }
-{{< /highlight >}}
+```
 
 This was so easy, the code, the makefile, the tests, that I decide to do the next problem in the `K&R` book. Counting on `ChaptGPT`'s familiarity with the problems in the `K&R` book, here's the prompt I used:
 
@@ -331,7 +331,7 @@ This is totally fantastic. Again, if you want the details see the repository.
 
 After all is said and done, here is a run of the tests:
 
-{{< highlight text >}}
+```text
 make test
 ./test_cmocka_detab
 [==========] tests: Running 6 test(s).
@@ -377,6 +377,6 @@ make test
 [       OK ] prop_detab_idempotent
 [==========] tests: 3 test(s) run.
 [  PASSED  ] 3 test(s).
-{{< /highlight >}}
+```
 
 Quite productive!
