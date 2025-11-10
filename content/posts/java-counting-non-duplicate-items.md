@@ -4,6 +4,7 @@ author: ["Karl Stump"]
 date: 2024-09-12
 tags: ["java"]
 draft: false
+math: true
 ---
 
 This problem came up at [codewars.com](https://www.codewars.com/kata/635fc0497dadea0030cb7936).
@@ -15,7 +16,7 @@ what is wanted.
 Such problems always make me think of a hash table, or an "associative array."
 
 But there are more details: the items to count are in an array, and the items themselves
-are also an array &#x2013; so a two dimensional array, something like:
+are also an array -- so a two dimensional array, something like:
 
 ```text
 [[1,2,3,4], ...]
@@ -23,11 +24,7 @@ are also an array &#x2013; so a two dimensional array, something like:
 
 To be intrepreted as:
 
-<img src="/ltximg/whatisalambda_d1e5692a115d7e2848cbdb27a0786fa743b5fdea.png" alt="\(\LARGE\begin{pmatrix}
-1 &amp;amp; 2 \\
-3 &amp;amp; 4
-\end{pmatrix}
-\)" />
+\\[\Large \begin{pmatrix} 1 & 2 \\\ 3 & 4 \end{pmatrix}  \\]
 
 So, then the question becomes, in what way are matrices to be regarded as the same?
 
@@ -37,38 +34,38 @@ What's a rotation?
 
 If we consider that this matrix is at 0 degrees:
 
-<img src="/ltximg/whatisalambda_5cad1313cdd8087f556b46806908dbdf2490ee6e.png" alt="\(\LARGE\begin{pmatrix}
-1 &amp;amp; 2 \\
-3 &amp;amp; 4
+\\[ \Large \begin{pmatrix}
+1 & 2 \\\\
+3 & 4
 \end{pmatrix}
-\)" />
+\\]
 
 Then, rotated 90 degress (clockwise) would be:
 
-<img src="/ltximg/whatisalambda_d126427ad023c839a760bfe1c92da76c9026347a.png" alt="\(
-\LARGE\begin{pmatrix}
-3 &amp;amp; 1 \\
-4 &amp;amp; 2
+\\[
+\Large \begin{pmatrix}
+3 & 1 \\\\
+4 & 2
 \end{pmatrix}
-\)" />
+\\]
 
 And, rotated 90 more degrees (180 degrees in total) would be:
 
-<img src="/ltximg/whatisalambda_6eca06b3f1d714024f610b0696f467c760039cd8.png" alt="\(
-\LARGE\begin{pmatrix}
-4 &amp;amp; 3 \\
-2 &amp;amp; 1
+\\[
+\Large \begin{pmatrix}
+4 & 3 \\\\
+2 & 1
 \end{pmatrix}
-\)" />
+\\]
 
 And, again rotated 90 more degrees (270 degrees in total) would be:
 
-<img src="/ltximg/whatisalambda_33c366941654885450c502307deec958524de0de.png" alt="\(
-\LARGE\begin{pmatrix}
-2 &amp;amp; 4 \\
-1 &amp;amp; 3
+\\[
+\Large \begin{pmatrix}
+2 & 4 \\\\
+1 & 3
 \end{pmatrix}
-\)" />
+\\]
 
 All of these matrices are to be regarded as the same, and counted only once.
 
@@ -79,31 +76,31 @@ My first thought was that I needed to actually rotate an array, moving values ar
 disabuses one of that notion. So, I came up with four groups of comparisons, to determine if two
 arrays were the same.
 
-{{< highlight java >}}
+```java
 public static boolean same(final int []m1, final int[] m2){
     if (( // 0 degrees
-          m1[0] == m2[0] && m1[1] == m2[1] &&
-          m1[2] == m2[2] && m1[3] == m2[3]
-          ) ||
+	  m1[0] == m2[0] && m1[1] == m2[1] &&
+	  m1[2] == m2[2] && m1[3] == m2[3]
+	  ) ||
         ( // 90 degrees
-          m1[0] == m2[1] && m1[1] == m2[3] &&
-          m1[2] == m2[0] && m1[3] == m2[2]
-          ) ||
+	  m1[0] == m2[1] && m1[1] == m2[3] &&
+	  m1[2] == m2[0] && m1[3] == m2[2]
+	  ) ||
         ( // 180 degrees
-          m1[0] == m2[3] && m1[1] == m2[2] &&
-          m1[2] == m2[1] && m1[3] == m2[0]
-          ) ||
+	  m1[0] == m2[3] && m1[1] == m2[2] &&
+	  m1[2] == m2[1] && m1[3] == m2[0]
+	  ) ||
         ( // 270 degrees
-          m1[0] == m2[2] && m1[1] == m2[0] &&
-          m1[2] == m2[3] && m1[3] == m2[1]
-          ))
+	  m1[0] == m2[2] && m1[1] == m2[0] &&
+	  m1[2] == m2[3] && m1[3] == m2[1]
+	  ))
         {
             return true;
         }else{
-        return false;
+	return false;
     }
 }
-{{< /highlight >}}
+```
 
 That seems to work quite well.
 
@@ -111,22 +108,22 @@ That seems to work quite well.
 ## Counting non duplicates {#counting-non-duplicates}
 
 Java provides us with a nice way to filter a stream. (Well, Java provides a nice way to stream an
-array and then filter it&#x2026; It all gets down to LISt Processing, I suppose.) For the predicate of
+array and then filter it... it all gets down to List Processing, I suppose.) For the predicate of
 the filter the `same` method will do nicely. Having filtered the stream, it will be turned back
 into an array, and one with all those items deleted.
 
-{{< highlight java >}}
+```java
 // let m be: int [][] passed into be counted
 int counter = 0;
 for( ; 0 < m.length ;){
     counter++;
     int [] testThis = m[0];
     m = Arrays.stream(m)
-        .filter(s-> !same(testThis,s))
-        .toArray(int[][]::new);
+	.filter(s-> !same(testThis,s))
+	.toArray(int[][]::new);
 }
 return counter;
-{{< /highlight >}}
+```
 
 Nice!
 
@@ -134,7 +131,7 @@ In one pass not only do we count (that's just incrementing the counter), but we 
 duplicates, including the current matrix (the `testThis` one), so none of them will cause any
 bother. And so, the array `m` will continue to grow smaller and smaller, until there's nothing in it.
 
-The more duplicates we have the better this approach works. Of course, worst-case &#x2026;.
+The more duplicates we have the better this approach works. Of course, worst-case ....
 
 Initially, I was doing a loop with a control variable (your typical, `i` or `j)` but then it became
 clear that it was not needed. I decided to leave the `for` anyway, although a `while` might be
@@ -155,7 +152,7 @@ So, defining the lambda means supplying the body of `test`. Of course, you could
 interface, but why? These generic functional interfaces are available for just such cases, and so
 there's no reason to reinvent the wheel. Here's what the definition looks like:
 
-{{< highlight java >}}
+```java
 BiPredicate<int [], int[]> p = (m1,m2) ->
     ( // 0 degrees
       m1[0] == m2[0] && m1[1] == m2[1] &&
@@ -173,19 +170,19 @@ BiPredicate<int [], int[]> p = (m1,m2) ->
       m1[0] == m2[2] && m1[1] == m2[0] &&
       m1[2] == m2[3] && m1[3] == m2[1]
       );
-{{< /highlight >}}
+```
 
 And then, the `for` looks like this:
 
-{{< highlight java >}}
+```java
 for( ; 0 < matrices.length ;){
     counter++;
     int [] testThis = matrices[0];
     matrices = Arrays.stream(matrices)
-        .filter(s-> !p.test(testThis,s))
-        .toArray(int[][]::new);
+	.filter(s-> !p.test(testThis,s))
+	.toArray(int[][]::new);
 }
-{{< /highlight >}}
+```
 
 Of course, the results are the same. But there is some gained clarity and readability.
 
@@ -197,7 +194,7 @@ But we've go some nested loops here don't we?
 Filter, as optimized as it may be, will be going through the entire list on each iteration. For
 shorter arrays this will not be a problem. And for arrays with a high degree of duplication, and a
 greatly shrinking list on each iteration, this will not be a problem. Even so, it's hard to get away
-from the fear of <img src="/ltximg/whatisalambda_c0079969b7cdf0d140bd75815ecca9f116ee8fa5.png" alt="\(\mathcal{O}(n^2)\)" />. And, well, if that's the best we can do, that's the best we
+from the fear of \\(\mathcal{O}(n^2)\\). And, well, if that's the best we can do, that's the best we
 can do. But it's not.
 
 There is a better way. And it gets back to a hash table. If we could
@@ -205,42 +202,41 @@ form a hash from the four rotations of a matrix, then we'd only touch
 each matrix one.
 
 So the idea is, get a matrix, form a hash value from the four rotational positions, and save the
-hash. For the next matrix, we do the same, get a hash value &#x2013; if the hash value matches any previously
+hash. For the next matrix, we do the same, get a hash value -- if the hash value matches any previously
 saved hash values, then we don't count it. Continue like that through the array.
 
 How to form the hash? We can form a unique hash by considering each of the four places
-a power of ten. So, `m[0]` could be 10<sup>0</sup>. `m[1]` 10<sup>1</sup>, `m[2]` 10<sup>2</sup>, and finally, `m[3]` 10<sup>3</sup>.
+a power of ten. So, `m[0]` could be 10^0. `m[1]` 10^1, `m[2]` 10^2, and finally, `m[3]` 10^3.
 
 So,
 
-<img src="/ltximg/whatisalambda_d1e5692a115d7e2848cbdb27a0786fa743b5fdea.png" alt="\(\LARGE\begin{pmatrix}
-1 &amp;amp; 2 \\
-3 &amp;amp; 4
+\\[ \Large \begin{pmatrix}
+1 & 2 \\\\
+3 & 4
 \end{pmatrix}
-\)" />
+\\]
 
 At zero degree rotation this matrix has a hash value of:
 
-1 x 10<sup>0</sup> + 2 x 10<sup>1</sup> + 3 x 10<sup>2</sup> + 4 \* 10<sup>3</sup> = 4321
+\\( 1 x 10^0 + 2 x 10^1 + 3 x 10^2 + 4 \* 10^3 = 4321 \\)
 
 And, as we rotate (90 degrees) the matrix we get:
 
-3 x 10<sup>0</sup> + 1 x 10<sup>1</sup> + 4 x 10<sup>2</sup> + 2 \* 10<sup>3</sup> = 2413
+\\( 3 x 10^0 + 1 x 10^1 + 4 x 10^2 + 2 \* 10^3 = 2413 \\)
 
 And, again rotating (180 degrees) we get:
 
-4 x 10<sup>0</sup> + 3 x 10<sup>1</sup> + 2 x 10<sup>2</sup> + 1 \* 10<sup>3</sup> = 1234
+\\( 4 x 10^0 + 3 x 10^1 + 2 x 10^2 + 1 \* 10^3 = 1234 \\)
 
 And, finally rotate again (270 degrees) we get:
 
-2 x 10<sup>0</sup> + 4 x 10<sup>1</sup> + 1 x 10<sup>2</sup> + 3 \* 10<sup>3</sup> = 3142
+\\( 2 x 10^0 + 4 x 10^1 + 1 x 10^2 + 3 \* 10^3 = 3142 \\)
 
-So, we can simply take the maximum. All matrices
-that have the same maximum hash value are the duplicates.
+So, we can simply take the maximum. All matrices that have the same maximum hash value are the duplicates.
 
 So, like this:
 
-{{< highlight java >}}
+```java
   public static int calculateHash (int[] m){
   // zero degrees
   int hash0 = m[0] + (m[1] * 10) + (m[2] * 100) + (m[3] * 1000);
@@ -253,41 +249,41 @@ So, like this:
   int maxHash = Math.max(Math.max(Math.max(hash0, hash90),hash180), hash270);
   return maxHash;
 }
-{{< /highlight >}}
+```
 
 And then the body of the main function becomes simply:
 
-{{< highlight java >}}
+```java
 Set<Integer> set = new HashSet<>();
 for(int [] x : matrices){
     set.add(calculateHash(x));
 }
 System.out.println("Set Count: " + set.size());
-{{< /highlight >}}
+```
 
 And of course, set.add does not add duplicates.
 
 Using 25000 randomly generate matrices I compared time. For the filter method:
 
-{{< highlight text >}}
+```text
 real	0m0.310s
 user	0m0.317s
 sys	0m0.087s
-{{< /highlight >}}
+```
 
 And for the hash method:
 
-{{< highlight text >}}
+```text
 real	0m0.122s
 user	0m0.135s
 sys	0m0.050s
-{{< /highlight >}}
+```
 
 The user row is what you want to look at. And that's a pretty significant difference.
 
 UPDATE: I went ahead and implemented the hash approach in C. The main loop is:
 
-{{< highlight c >}}
+```c
 for (int i = 0; i < MSIZE; i++){
   hashValue = calculateHash(matrices[i]);
   if (hashStore[hashValue] == 0){
@@ -295,18 +291,17 @@ for (int i = 0; i < MSIZE; i++){
     hashStore[hashValue] = 1;
   }
  }
-{{< /highlight >}}
+```
 
-and timing 25000 randomly generatated
-matrices yields:
+and timing 25000 randomly generated matrices yields:
 
-{{< highlight text >}}
+```text
 real	0m0.008s
 user	0m0.008s
 sys	0m0.001s
-{{< /highlight >}}
+```
 
-&#x2026; and that's more than "pretty significant." Wow!
+... and that's more than "pretty significant." Wow!
 
 Okay, that's (really) enough.
 
