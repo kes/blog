@@ -99,13 +99,13 @@ CFLAGS  := -std=c17 -O2 -Wall -Wextra -Wpedantic
 all: detab
 
 detab: detab.c
-	$(CC) $(CFLAGS) -o $@ $<
+        $(CC) $(CFLAGS) -o $@ $<
 
 clean:
-	rm -f detab
+        rm -f detab
 
 test: detab
-	./tests/run.sh
+        ./tests/run.sh
 ```
 
 Perfect! What about testing? The following `bash` test harness was created.
@@ -208,7 +208,7 @@ And,
 >
 > If you’d like, I can convert the Bash tests into a CUnit/cmocka test suite, or wrap the tests with ctest (CMake) — but the current Makefile + Bash keeps dependencies minimal.
 
-While I like the bash test harness, I did not feel that it was best to go in that direction. So, after some discussion with `ChatGPT`, I opted to go with `cmocka` (and admittedly, it was a bit of a "flip o' the coin"). This required some changes to the Makefile and the source, which, if interested you can see my repository. Here are the resulting tests:
+While I like the bash test harness, I did not feel that it was best to go in that direction. So, after some discussion with `ChatGPT`, I opted to go with `cmocka` (and admittedly, it was a bit of a "flip o' the coin"). This required some changes to the Makefile and the source, which, if interested you can see my [repository](https://github.com/kes/k-r-ai). Here are the resulting tests:
 
 ```C
 #include <stdarg.h>
@@ -283,7 +283,7 @@ And here's the response:
 
 I take it that with the "Great prompt" that `ChatGPT` is indicating that it knows all the exercises in the book. Amazing.
 
-From here on, I won't go into a lot of details, just things that stood aout to me. If interested you can see all the details in the repository.
+From here on, I won't go into a lot of details, just things that stood aout to me. If interested you can see all the details in the [repository](https://github.com/kes/k-r-ai).
 
 Additional property tests were requested, and this resulted in the following response:
 
@@ -327,7 +327,7 @@ And more details from `ChatGPT`:
 
 And to be sure, `idempotence` is: for some function \\( f(x) \\), then   \\[ f(f(x))=f(x) \\]
 
-This is totally fantastic. Again, if you want the details see the repository.
+This is totally fantastic. Again, if you want the details see the [repository](https://github.com/kes/k-r-ai).
 
 After all is said and done, here is a run of the tests:
 
