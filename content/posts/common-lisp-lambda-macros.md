@@ -35,10 +35,20 @@ And that's a great observation.
 
 There may be any number of reasons for choosing one language over another. Everything from the number of available developers to code in the language, to the speed of the resulting executable code. Among various reasons, is also the important question, "what can I do with it?"
 
+The two features of Lisp that made it unique were closures and macros. Add in strong run-time typing, Graham could write eloquently:
+
+> With macros, closures, and run-time typing, Lisp transcends object oriented programming.
+
+Graham's book was published in 1996 and he believed that the features of `Lisp` would bring a new way of programming. Indeed, it was one of his goals for his book was to explain this new approach:
+
+> One of the aims of this book is to explain not just the Lisp language, but the new approach to programming that Lisp makes possible. This approach is one that you will see more of in the future.
+
+As noble as his sentiment was, and is, and whatever the benefits of `Lisp` for programming, it is still nevertheless a fact that `Lisp` never caught on.
+
 
 ## Lambda {#lambda}
 
-Graham then demonstrates a lexical closure in `Lisp`:
+Graham demonstrates a lexical closure in `Lisp`:
 
 ```lisp
 (defun addn (n)
@@ -52,11 +62,13 @@ Lambdas have been in Lisp since 1959.
 
 Java introduced lambda expressions in version 8 (2014).
 
-And here is Oracle's page on  [Lambda Expressions](https://docs.oracle.com/javase/tutorial/java/javaOO/lambdaexpressions.html). What is clear, at least to me, is that Lambdas were meant to be a convenience for the verbose anonymous class, particularly when that class is very simple, the interface providing only one method. In that case, Java provides a lambda. (But even so it never provided closures, although some might debate that; i.e., what is the definition of a closure?)
+And here is Oracle's page on  [Lambda Expressions](https://docs.oracle.com/javase/tutorial/java/javaOO/lambdaexpressions.html).
 
-At the time, there was a lot of excitement. But, maybe the lambda was not all that it was cracked up to be??
+But [what is a lambda](https://kes.github.io/posts/whatisalambda/). Quite simply it's an anonymous function.
 
-According to some Lambdas have died: [RIP Java Lambdas](https://medium.com/@kotiavula6/rip-java-lambdas-2014-2025-you-were-cool-until-you-werent-4ab9bac644c8), and according to that post the reasons are:
+At the time, there was a lot of excitement. But, now, maybe the lambda in Java was not all that it was cracked up to be??
+
+According to some lambdas have died: [RIP Java Lambdas](https://medium.com/@kotiavula6/rip-java-lambdas-2014-2025-you-were-cool-until-you-werent-4ab9bac644c8), and according to that post the reasons are:
 
 1.  Debugging hell
 2.  Unreadable for Junior Devs
@@ -66,21 +78,11 @@ According to some Lambdas have died: [RIP Java Lambdas](https://medium.com/@koti
 
 Definitely worth a look.
 
-The problem is, IMO (you do notice the IMO, right?), the problem is that Lambdas don't really belong in Java. That might be a controversial opinion. But really, lambdas are simply not where the soul of Java is found. This is not to say that the syntactic sugar for an anonymous class in Java is not a nice thing. It totally is. I love it, and I use it.
+The problem is, IMO (you do notice the IMO, right?), the problem is that lambdas don't really belong in Java. That might be a controversial opinion. But really, lambdas are simply not where the soul of Java is found. This is not to say that the syntactic sugar for an anonymous class in Java is not a nice thing. It totally is. I love it, and I use it.
 
-It should be noted that lambdas and closure are not the same thing. A lambda is an anonymous function. A closure, on the other hand, is an a function that captures and retains access to variable outside of its lexical scope -- even when executed outside that scope. See [Closure vs Lambda](https://calledges.com/computer/closure-vs-lambda)
+It should be noted that lambdas and closure are not the same thing. A lambda is an anonymous function. A closure, on the other hand, is a function that captures and retains access to variables from its lexical scope -- even when executed outside that scope. See [Closure vs Lambda](https://calledges.com/computer/closure-vs-lambda)
 
 In Lisp the lambda _is_ a closure. And in Java it's not. And that's okay. In fact, lambda might not even be the strongest paradigm in `Lisp`.
-
-The really key strength of `Lisp` is found in what most coders dislike most on encountering `Lisp` and that is parentheses. Well, not parentheses exactly but something called [homoiconicity](https://en.wikipedia.org/wiki/Homoiconicity). Because of this property, `Lisp` allows the developer to write programs that write programs, using a rather unique feature in `Lisp` called `macros`.  With "run-time typing" thrown in Graham, rhapsodizes:
-
-> With macros, closures, and run-time typing, Lisp transcends object oriented programming.
-
-Graham's book was published in 1996 and he believed that the features of `Lisp` would bring a new way of programming. Indeed, it was one of his goals for his book was to explain this new approach:
-
-> One of the aims of this book is to explain not just the Lisp language, but the new approach to programming that Lisp makes possible. This approach is one that you will see more of in the future.
-
-As noble as his sentiment was, and is, and whatever the benefits of `Lisp` for programming, it is still nevertheless a fact that `Lisp` never caught on.
 
 In Java, if you want to define a Lambda, you'll start with an Interface:
 
@@ -128,13 +130,11 @@ temp(a, n -> {
     });
 ```
 
-And boom! That strange and scary `->` -- but it's lambda! And that is readable.
+And boom! That strange and scary `->` -- behold, lambda! Neat, and readable.
 
-So, I agree. It's a lambda. But is it a closure? Typically a closure is define as a lambda enclosing over a local variable in the scope of the defined lambda. In this example, the local `b` is in the scope of the lambda. But there's only so much that you can do with it.
+It's a lambda. But is it a closure? Typically a closure is defined as a lambda enclosing over a local variable in the scope of the defined lambda. In this example, the local `b` is in the scope of the lambda. But there's only so much that you can do with it.
 
-So, in my opinion, Java does have closures. The use of the local variable `b` in the code is very much limited. It cannot be modified. And while there might be any number of technical reasons why this is so, the point is that `b` cannot be modified.
-
-In my view a closure must allow the enclosed local variables to be modified. Perhaps I'm wrong?
+So, in my opinion, Java does have closures. The use of the local variable `b` in the method is very much limited. It cannot be modified. And while there might be any number of technical reasons why this is so, all well and good, but the point is that `b` cannot be modified. In my view a closure must allow the enclosed local variables to be modified. Perhaps I'm wrong?
 
 In any event, in `Lisp` this is easily done:
 
@@ -157,16 +157,24 @@ Or we could have:
             (t "command unrecognized"))))
 ```
 
-That's all good. But again, here's a secret: lambda and closures, while very strong, are the not the strongest feature of `Lisp`.
+That's all good. But again, here's a secret: lambda and closures, while very strong, are the not the strongest feature of `Lisp`. The real power of `Lisp` is in its macros.
 
 
 ## Macros {#macros}
 
-The real power of `Lisp` is in its macros.
+The really key strength of `Lisp` is found in what most coders dislike most on encountering `Lisp` and that is parentheses. Well, not parentheses exactly but something called [homoiconicity](https://en.wikipedia.org/wiki/Homoiconicity). Because of this property, in `Lisp` the developer can write programs that write programs, using a rather unique feature in `Lisp` called `macros`.
+
+> Macros are the single greatest advantage that lisp has as a programming language and the single greatest advantage of any programming language. With them you can do things that you simply cannot do in other languages. (Doug Hoyte, [Let Over Lambda](https://letoverlambda.com/index.cl))
 
 Note: This is simply touching upon the topic of macros, not a deep dive. Someday, I'll ...
 
-Unfortunately, when the word "macro" is used most will think of a sort of "basic" substitution. But in `Lisp` the macro facility has the full power of the `Lisp` language. You are able to control, using the power of `Lisp`, what the compiler sees, and so, the macro, is the defining of a new language, or a DSL, or simply making language additions. These additions can greatly aid in writing code, understanding code, and in abstracting away boilerplate. It is, or should be, a programmer's dream.
+Unfortunately, when the word "macro" is used most will think of a sort of basic substitution.
+
+> I can't emphasize enough that the Common Lisp macro shares essentially nothing but the name with the text-based macros found in C and C++. Where the C pre-processor operates by textual substitution and understands almost nothing of the structure of C and C++, a Lisp macro is essentially a code generator that gets run for you automatically by the compiler. (Peter Seibel, [Practical Common Lisp](https://gigamonkeys.com/book/))
+
+In `Lisp` the macro facility has the full power of the `Lisp` language. You are able to control, using the power of `Lisp`, what the compiler sees, and so, the macro, is the defining of a new language, or a DSL, or simply making language additions. These additions can greatly aid in writing code, understanding code, and in abstracting away boilerplate. It is, or should be, a programmer's dream.
+
+So powerful are Lisp macros that it is usual considered an advanced feature, to be introduced after the language has been thoroughly covered. Peter Seible takes a different view and in his book, [Practical Common Lisp](https://gigamonkeys.com/book/), introduces macros in chapter three. Only four chapters later, Seibel devotes three chapters to macros: [7.Macros: Standard Control Constructs](https://gigamonkeys.com/book/macros-standard-control-constructs), [8.Macros: Defining Your Own](https://gigamonkeys.com/book/macros-defining-your-own), [9.Practical: Building a Unit Test Framework](https://gigamonkeys.com/book/practical-building-a-unit-test-framework)
 
 And I could be wrong, but the "enlightenment" that is often spoken about when learning `Lisp` is I think found here in the idea of "code that writes code." I could be wrong.
 
@@ -220,3 +228,5 @@ CL-USER> `(list has these elements ,@lst)
 That's enough for now. Graham's hope that `Lisp` would bring in a new wave of programming was not fulfilled. Too bad for a generation of programmers.
 
 > Meanwhile, ideas borrowed from Lisp increasingly turn up in the mainstream: interactive programming environments, garbage collection, and run-time typing, to name a few.
+
+[Common-Lisp.net](https://common-lisp.net/)
