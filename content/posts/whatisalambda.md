@@ -34,7 +34,7 @@ So, what's a lambda?
 
 In demonstrating lambda in Lisp, I'm going to assume that the examples are sufficiently clear that even someone with no experience with Lisp, yet knowledgeable in some other programming language, will have not much trouble following. As such, I will leave a lot of Lisp details unsaid.
 
-{{< figure src="/ox-hugo/lambdaDefined.png" class="center" >}}
+{{< figure src="/ox-hugo/learning-never-stops.png" class="center" >}}
 
 In the REPL (Read, Eval, Print Loop; think of it as Lisp's interactive window, and, if severely interested, you might try [REPL](https://en.wikipedia.org/wiki/Read%E2%80%93eval%E2%80%93print_loop) on Wiki), let's define a lambda ...
 
