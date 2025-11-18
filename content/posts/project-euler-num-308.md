@@ -278,18 +278,29 @@ Okay, that's a step in the right direction. Can we make a table of the first twe
 And this gives:
 
 <style>
-.my-table-3 th{
+.fractran-factors-table-no-header tr:nth-child(even){
+background-color: #575551;
+}
+/*
+.fractran-factors-table-no-header thead tr th:nth-child(12) {
+  background-color:red;
+}
+*/
+.fractran-factors-table-no-header th{
+font-weight:normal;
 text-align: center;
+background-color: #575551;
+padding:5px;
 }
-.my-table td {
-    padding: 20px;
-    text-align: center;
+.fractran-factors-table-no-header td{
+padding:5px;
 }
+
 </style>
 
-<style>.my-table-3 table { text-align: center;  width: 60%;  margin: 0 auto;  }</style>
+<style>.fractran-factors-table-no-header table { text-align: center;  width: 80%;  margin: 0 auto;  }</style>
 
-<div class="ox-hugo-table my-table-3">
+<div class="ox-hugo-table fractran-factors-table-no-header">
 
 | 1  | 0 | 1 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 15   |
 |----|---|---|---|---|---|---|---|---|---|---|------|
@@ -336,18 +347,48 @@ That's getting there. Let's add some headers.
 This gives:
 
 <style>
-.my-table-4 th{
-text-align: center;
+/* Base table styling */
+.fractran-factors-with-header {
+  border-collapse: collapse;
 }
-.my-table td {
-    padding: 20px;
-    text-align: center;
+
+/* Header cells */
+.fractran-factors-with-header thead th {
+  font-weight: normal;
+  text-align: center;
+  background-color: #575551;   /* overall header background */
+  color: #f0f0f0;
+  padding: 6px 8px;
+}
+
+/* Body cells */
+.fractran-factors-with-header td {
+  padding: 4px 8px;
+  text-align: center;
+}
+
+/* Row striping (body only) */
+.fractran-factors-with-header tbody tr:nth-child(even) {
+  background-color: #2f2f2f;
+}
+
+/* Highlight factor columns 11–29: columns 6–11 (header + body) */
+.fractran-factors-with-header thead th:nth-child(n+6):nth-child(-n+11),
+.fractran-factors-with-header tbody td:nth-child(n+6):nth-child(-n+11) {
+  background-color: #42403c;  /* slightly different tone */
+}
+
+/* Optional: make the "Value" column pop a bit */
+.fractran-factors-with-header thead th:nth-child(12),
+.fractran-factors-with-header tbody td:nth-child(12) {
+  background-color: #3b3f4a;
+  font-weight: bold;
 }
 </style>
 
-<style>.my-table-4 table { text-align: center;  width: 80%;  margin: 0 auto;  }</style>
+<style>.fractran-factors-with-header table { text-align: center;  width: 80%;  margin: 0 auto;  }</style>
 
-<div class="ox-hugo-table my-table-4">
+<div class="ox-hugo-table fractran-factors-with-header">
 
 | Iteration | 2 | 3 | 5 | 7 | 11 | 13 | 17 | 19 | 23 | 29 | Value |
 |-----------|---|---|---|---|----|----|----|----|----|----|-------|
