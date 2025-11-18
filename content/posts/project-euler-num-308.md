@@ -450,8 +450,6 @@ S29 -> S11[label="(1) +7";color=blue];
 }
 ```
 
-{{< figure src="/ox-hugo/test.png" >}}
-
 From the fraction list, the following is the equivalent finite state machine, where each “node” corresponds to one of the large primes \\( 11,13,17,19,23,29 \\) and the factors \\( 2,3,5,7 \\) the “registers” in the system.
 
 {{< figure src="/ox-hugo/test.png" >}}
