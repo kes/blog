@@ -421,7 +421,7 @@ digraph finite_state_machine {
 
 	node [shape = doublecircle]; 2
 	node [shape = circle];
-2->N1
+2->S1
 S1:n -> S1:n[margin=1;headlabel="(1) -2, +3, +5";color=blue];
 S1:e -> S1[label="(2) -7";color=red];
 S1 -> S11[label="(3) +5"; color=green];
