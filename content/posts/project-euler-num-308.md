@@ -96,7 +96,6 @@ This is the correct result for the first iteration. So, we're off to a good star
 
 Running the above code gives us the following:
 
-#+begin_export html
 <style>
 .my-table-1 tr:nth-child(even){
 background-color: #3b3f4a;
