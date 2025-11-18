@@ -1,5 +1,5 @@
 ---
-title: "FRACTRAN: John Conway's Programming Language Fun"
+title: "FRACTRAN: John Conway’s Ridiculous Little Programming Language"
 author: ["Karl Stump"]
 date: 2025-11-16
 tags: ["euler", "lisp"]
@@ -7,72 +7,32 @@ draft: false
 math: true
 ---
 
-Some months back I learned of an esoteric programming languages created by mathematician [John Conway](https://en.wikipedia.org/wiki/John_Horton_Conway). Conway also created the well known  [Game of Life](https://en.wikipedia.org/wiki/Conway%27s_Game_of_Life).
+Some months back I learned about an esoteric programming language created by mathematician [John Conway](https://en.wikipedia.org/wiki/John_Horton_Conway). Conway also created the well-known [Game of Life](https://en.wikipedia.org/wiki/Conway%27s_Game_of_Life).
 
-The language is called [FRACTRAN](https://en.wikipedia.org/wiki/FRACTRAN) (see [here](https://www.uctv.tv/shows/Fractran-A-Ridiculous-Logical-Language-with-John-Conway-23320) for a Conway lecture).
+The language is called [FRACTRAN](https://en.wikipedia.org/wiki/FRACTRAN) (there’s a wonderful introductory lecture by Conway himself [here](https://www.uctv.tv/shows/Fractran-A-Ridiculous-Logical-Language-with-John-Conway-23320)).
 
-Very simply a `FRACTRAN` program is an ordered list of positive fractions \\[ f\_1, f\_2, ... f\_a \\]
-and an initial integer, \\( n \\).
+Very simply, a `FRACTRAN` program is an ordered list of positive fractions
 
-A `FRACTRAN` program is run in the following manner:
+\\[ f\_1, f\_2, \ldots, f\_k \\]
 
-1.  for the first fraction \\( f\_i \\) in the list for which \\( n \* f\_i \\) is an integer, replace \\( n \\) by \\( n \* f\_i \\)
-2.  repeat the first rule until no fraction in the list produces an integer when multiplied by \\( n \\), then halt.
+and an initial integer \\( n \\).
 
-Using the above two rules, Conway wrote a ~~list of fractions~~ program that produce a list of numbers that include ordered powers of two, such that their exponents are prime. (That's the type of statement that I have to repeat to make sure that I said it correctly.)
+The program runs like this:
 
-So, amazingly, running the `FRACTRAN` program, we get a list of numbers like: \\[ 2^2 , 2^3, 2^5, 2^7,  2^{11}, 2^{13} \dots  \\]
+1.  Find the first fraction \\( f\_i \\) in the list such that \\( n \cdot f\_i \\) is an integer, and replace \\( n \\) with that new integer.
+2.  Repeat step (1) until no fraction in the list produces an integer when multiplied by \\( n \\); then halt.
 
-Notice those exponents are prime. But also notice that I said "like." Here's the thing. While these exponents of 2 are prime, and ordered, there are lots of other numbers produced as well.
+Using only this mechanism, Conway wrote a FRACTRAN program that generates a sequence of numbers in which certain terms are powers of two whose exponents are prime. For example, starting from 2, the program eventually produces values like
 
-So, we get: \\( \text{garbage, garbage, garbage } \ldots 2^5 \text{ garbage, garbage, garbage } \ldots 2^7 \ldots \\)"
+\\[ 2^2,\\; 2^3,\\; 2^5,\\; 2^7,\\; 2^{11},\\; 2^{13}, \ldots \\]
 
-Let's look at a `FRACTRAN` problem statement from [Project Euler](https://projecteuler.net/about).
+The exponents are prime, and they appear in increasing order. In between those special values, the program produces a lot of "other" numbers --- noise. The job ahead will be to navigate that noise efficiently.
 
-You can find the problem here: <https://projecteuler.net/problem=308>
+In this post, we’ll look at [Project Euler Problem 308](https://projecteuler.net/problem=308), which asks:
 
-And, I have reproduced it here:
+> If someone uses Conway’s `FRACTRAN` prime-generating program to "solve" Project Euler Problem 7 (find the 10,001st prime), how many iterations of the program are needed before we reach the power of two whose exponent is that prime?
 
-<style>
-.verse {
-    margin-bottom: 10px;
-    padding: 10px;
-    ##background-color: #FFF8DC;
-    border-left: 2px solid #ffeb8e;
-    border-left-color: rgb(255, 228, 102);
-    display: block;
-    margin-block-start: 1em;
-    margin-block-end: 1em;
-    margin-inline-start: 40px;
-    margin-inline-end: 40px;
-}
-</style>
-
-<div class="verse">
-
-A program written in the programming language Fractran consists of a list of fractions.<br />
-<br />
-The internal state of the Fractran Virtual Machine is a positive integer, which is initially set to a seed value. Each iteration of a Fractran program multiplies the state integer by the first fraction in the list which will leave it an integer.<br />
-<br />
-For example, one of the Fractran programs that John Horton Conway wrote for prime-generation consists of the following 14 fractions:<br />
-<br />
-<br />
-\\[ \dfrac{17}{91}, \dfrac{78}{85}, \dfrac{19}{51}, \dfrac{23}{38}, \dfrac{29}{33}, \dfrac{77}{29}, \dfrac{95}{23}, \dfrac{77}{19}, \dfrac{1}{17}, \dfrac{11}{13}, \dfrac{13}{11}, \dfrac{15}{2}, \dfrac{1}{7}, \dfrac{55}{1} \\]<br />
-<br />
-<br />
-Starting with the seed integer 2, successive iterations of the program produce the sequence:<br />
-<br />
-\\( 15, 825, 725, 1925, 2275, 425, ..., 68, 4, 30, ..., 136, 8, 60, ..., 544, 32, 240, ... \\)<br />
-<br />
-The powers of 2 that appear in this sequence are \\( 2^2 \\), \\( 2^3 \\), \\( 2^5 \\), \\( ... \\)<br />
-<br />
-It can be shown that _all_ the powers of 2 in this sequence have prime exponents and that _all_ the primes appear as exponents of powers of 2, in proper order!<br />
-<br />
-If someone uses the above Fractran program to solve Project Euler Problem 7 (find the 10001st prime), how many iterations would be needed until the program produces 2^10001st prime?<br />
-
-</div>
-
-So, we want to find the number of iterations it takes for Conway's program to produce  \\( 2^{10001^{st}\text{ prime }} \\). Now, we know that the  10001<sup>st</sup>  prime is \\( 104743 \\) (See [WolfRamAlpha](https://www.wolframalpha.com/input?i=10001st%20prime%20number), or see [my Lisp solution](https://kes.github.io/posts/project-euler-num-7/)). So the question is: how many iteration until we get \\( 2^{104743} \\) -- a huge number, obviously. Fortunately we don't have to calculate it. So, again, (not to beat a dead horse) the number of iterations until \\( 2 \\) has an exponent of \\( 104743 \\).
+We can start with a simple `FRACTRAN` simulator in Common Lisp, then gradually uncover the finite state machine hiding inside Conway’s fraction list, and finally arrive at an optimized implementation that can handle the enormous iteration count.
 
 
 ## The Idea of a FRACTRAN Simulator {#the-idea-of-a-fractran-simulator}
@@ -91,9 +51,9 @@ We can then define a function that runs the program for one iteration.
 
 To review a bit: we've been told that we are to pass in a seed number, also called the state, and that number is multiplied by the first fraction. If we get an integer, we return that integer. If not, we discard the calculation and move on to the next fraction and follow the same process:
 
--   multiple the state by the fraction, and if we get an integer then return it, otherwise, discard the calculation and move on.
+-   multiply the state by the fraction, and if we get an integer then return it, otherwise, discard the calculation and move on.
 
-If we exhaust all the fractions and hav not gotten an integer, the program halts. (However, if you look closely at Conway's ~~list of fractions~~ program, you can see that we will always get a new integer. _Hint_ look at the last fraction.)
+If we exhaust all the fractions and have not gotten an integer, the program halts. (However, if you look closely at Conway's ~~list of fractions~~ program, you can see that we will always get a new integer. _Hint_ look at the last fraction.)
 
 So, our function looks like this:
 
@@ -190,7 +150,7 @@ Taking the prime factors in the `FRACTRAN` program:
 
 \\( \dfrac{17}{7 \times 13}, \dfrac{2 \times 3 \times 13}{5 \times 17}, \dfrac{19}{3 \times 17}, \dfrac{23}{2 \times 19}, \dfrac{29}{3 \times 11}, \dfrac{7 \times 11}{29}, \dfrac{5 \times 19}{23}, \dfrac{7 \times 11}{19}, \dfrac{1}{17}, \dfrac{11}{13}, \dfrac{13}{11}, \dfrac{3 \times 5}{2}, \dfrac{1}{7}, \dfrac{5 \times 11}{1} \\)
 
-We need to consider exactly what is happening when we run the program. So, We start with \\( 2 \\). This is then multiplied by the fraction \\( \dfrac{17}{7 \times 13} \\). But what does that really mean? Multiplication is putting in factors, while division is taking out factors. So, we get,
+We need to consider exactly what is happening when we run the program. So, we start with \\( 2 \\). This is then multiplied by the fraction \\( \dfrac{17}{7 \times 13} \\). But what does that really mean? Multiplication is putting in factors, while division is taking out factors. So, we get,
 
 \\[ \dfrac{2 \times 17}{7 \times 13} \\]
 
@@ -233,7 +193,7 @@ text-align: center;
 
 Finally, we get an integer, \\( 15 \\), which we will feed back into the `FRACTRAN` program.
 
-It shouldn't be too hard to see that in the `FRACTAN` program the last fraction \\( \dfrac{5 \times 11}{1} \\) is a catchall, and when we feed \\( 15 \\) back into the program, it is only this fraction that when multiplied by \\( 15 \\) returns an integer, and so, iteration two gives us, \\[ \dfrac{3 \times 5^2 \times 11}{1} \longrightarrow  825 \\]
+It shouldn't be too hard to see that in the `FRACTRAN` program the last fraction \\( \dfrac{5 \times 11}{1} \\) is a catchall, and when we feed \\( 15 \\) back into the program, it is only this fraction that when multiplied by \\( 15 \\) returns an integer, and so, iteration two gives us, \\[ \dfrac{3 \times 5^2 \times 11}{1} \longrightarrow  825 \\]
 
 Now, a quiz. If we feed in \\( 825 \\) into the program, what is the first fraction that will return an integer? And what is the resulting integer value?
 
@@ -420,12 +380,12 @@ replaced it with "--". This removes a lot of clutter and make the table easier t
 Examining the table it looks like primes \\( 11 \\) through \\( 29 \\) are mutually exclusive (an `XOR`). Only
 one can be on at a time.
 
-So, primes \\( 11 \\) through \\( 29 \\) function as nodes, in a state machine, while primes \\( 2, 3, 5, \text{ and } 7 \\) function as state.
+So primes \\( 11 \\) through \\( 29 \\) function as _control nodes_ in a finite state machine, while primes \\( 2,3,5, \text{ and } 7 \\) encode the data state (their exponents are the “registers” we’re updating).
 
-This distinction between the primes \\( 11 \\) through \\( 29 \\) and the primes \\( 2 \\)through \\( 7 \\) will become really important, like, right now!
+This distinction between the primes \\( 11 \\) through \\( 29 \\) and the primes \\( 2 \\) through \\( 7 \\) will become really important, like, right now!
 
 
-## Grok the FRACTRAN, Man! {#grok-the-fractran-man}
+## Grokking FRACTRAN {#grokking-fractran}
 
 Let's define a finite state machine (FSM) with a starting node, labeled \\( 1 \\), and further that there are nodes numbered, \\( 11, 13, 17, 19, 23, 29 \\), and that these nodes have edges.
 
@@ -433,7 +393,7 @@ The FSM, also, has state, carried in factors, \\( 2, 3, 5, \text{ and } 7 \\) (o
 
 In general moving along an edge, from node to node, will increment or decrement some, all, or no, factors. However, in no case, is a move permitted along any edge that causes the value of a factor to be less than zero.
 
-Every fraction in Conway's program, defines a node and an edge.
+Every fraction in Conway's program defines a node and an edge.
 
 Consider the first fraction in the program: \\[ \dfrac{17}{7 \times 13} \\]
 
@@ -447,9 +407,9 @@ Now, since there are no other fractions with \\( 13 \\) in the denominator, this
 
 So, there is in the FSM, node \\(13\\) with two edges. The first is to node \\( 17 \\) (allowed only if the current state value has a factor of \\( 7 \\) ), and a second null edge, to node \\( 11 \\).
 
-Note that the `FRACTRAN` program runs from left to right, so in the event of more than one edge from a node, there is a priority. The edge from node \\( 13 \\) to \\( 17 \\) takes priority over the transition to node \\( 11 \\).
+Note that the `FRACTRAN` program runs from left to right, so in the event of more than one edge from a node, there is a priority. In programming languages this is called _associativity_. In `FRACTRAN` the _associativity_ is left to right. In this example, the edge from node \\( 13 \\) to \\( 17 \\) takes priority over the edge to node \\( 11 \\).
 
-Working in this way, we can define our FSM as follows:
+Working in this way, we can define our FSM as follows (if you are not conversant with dot code, don't worry about it, the actual diagram follows):
 
 ```dot
 digraph finite_state_machine {
@@ -461,7 +421,7 @@ digraph finite_state_machine {
 
 	node [shape = doublecircle]; 2
 	node [shape = circle];
-2->S1
+2->N1
 S1:n -> S1:n[margin=1;headlabel="(1) -2, +3, +5";color=blue];
 S1:e -> S1[label="(2) -7";color=red];
 S1 -> S11[label="(3) +5"; color=green];
@@ -490,7 +450,7 @@ S29 -> S11[label="(1) +7";color=blue];
 }
 ```
 
-Which gives:
+From the fraction list, the following is the equivalent finite state machine, where each “node” corresponds to one of the large primes \\( 11,13,17,19,23,29 \\) and the factors \\( 2,3,5,7 \\) the “registers” in the system.
 
 {{< figure src="/ox-hugo/test.png" >}}
 
@@ -879,9 +839,9 @@ But now, we need speed.
 
 I rewrote the FSM using `tagbody`, which is a Common Lisp feature that allows you to `goto`. It is perfect for this project.
 
-I also identified some optimizations. These are easily discernible from the graph of FSM. For example, `S11` and `S29`, and `S13` and `S17`. In the code below I have documented where these optimizations have been made, and left behind old code in comments.
+I also identified some optimizations. These are easily discernible from the FSM graph. For example, `S11` and `S29`, and `S13` and `S17`. In the code below I have documented where these optimizations have been made, and left behind old code in comments.
 
-The code below is very simple. One thing to note is that there are no loops, only `gotos`. We simply move from node to node (called states in this code) until we get our answer.
+The code below is very simple. One thing to note is that there are no loops, only `gotos`. We simply move from node to node (called "states" in the code) until we get our answer.
 
 ```lisp
 
@@ -1120,6 +1080,17 @@ CL-USER> (print *f-count*)
 CL-USER>
 ```
 
-Wow, we shaved 16 seconds off our time.
+Wow, we shaved 16 seconds off the time.
 
-`FRACTRAN`, pretty cool.
+
+## Conclusion {#conclusion}
+
+In the end, we learn two things:
+
+-   It takes exactly \\( 1,539,669,807,660,924 \\) iterations of Conway’s `FRACTRAN` program to reach the power of two whose exponent is the \\( 10,001^{st} \\) prime.
+
+-   By understanding the `FRACTRAN` program as a finite state machine, and then optimizing the transitions, we can go from a naive simulator to a zero-consing, tagbody-based implementation that solves the problem in just over one minute.
+
+For a "ridiculous" little language, `FRACTRAN` is mind-expanding, and from a programming standpoint, an excellent way to explore number theory, automata, and performance tuning.
+
+`FRACTRAN`: pretty cool.
