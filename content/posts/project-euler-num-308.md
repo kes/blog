@@ -114,12 +114,12 @@ border: 0;
 }
 /* Body cells */
 .my-table-1 td{
-padding:5px;
+padding:3px;
 border: 1px black solid;
 }
 </style>
 
-<style>.my-table-1 table { text-align: center;  width: 60%;  margin: 0 auto;  }</style>
+<style>.my-table-1 table { text-align: center;  width: 30%;  margin: 0 auto;  }</style>
 
 <div class="ox-hugo-table my-table-1">
 
@@ -176,48 +176,28 @@ Also, not an integer.
 Let's back up and put this process in tabular form:
 
 <style>
-.my-table-2 {
+
+.my-table-2 table {
+  /* background-color: #132d16;*/   /* chalkboard */
   border-collapse: collapse;
   margin: 0 auto;
-  font-size: 0.95rem;        /* slightly smaller, feels more “set” */
-}
-
-/* Header row */
-.my-table-2 thead th {
-  background-color: #163515; /* light grey, like LaTeX booktabs header */
-  color: #dfe61b;
-  font-weight: normal;
-  text-align: center;
-  padding: 6px 10px;
+  font-size: 0.95rem;
   border: 0;
-  /* border-bottom: 1px solid #cccccc; */
+  width: 90%;
+
+
 }
 
-/* Body cells */
-.my-table-2 tbody td {
+.my-table-2 td,
+.my-table-2 th {
+  color: #f7f7e5;              /* chalk */
   padding: 6px 10px;
   text-align: center;
   border: 0;
-  /* border-bottom: 1px solid #e0e0e0; */
-}
-
-/* Subtle row striping */
-.my-table-2 tbody tr:nth-child(even) {
-  background-color: #3b3f4a;
-}
-
-/* Optional: first column slightly left-aligned to feel “texty” */
-.my-table-2 tbody td:first-child {
-/*text-align: left; */
-}
-/* Optional: narrower arrow column */
-.my-table-2 tbody td:nth-child(2),
-.my-table-2 thead th:nth-child(2) {
-  /*width: 2.5rem; */
 }
 </style>
 
-<style>.my-table-2 table { text-align: center;  width: 60%;  margin: 0 auto;  }</style>
+<style>.my-table-2 table { width: 50%;  }</style>
 
 <div class="ox-hugo-table my-table-2">
 
@@ -769,7 +749,8 @@ Each state that follows is very easy to follow. A simple implementation of the f
 (iterate 20)
 ```
 
-#+begin_export html
+So, now, running the above, we get:
+
 <style>
 .my-table-5 tr:nth-child(even){
 background-color: #3b3f4a;
@@ -797,59 +778,31 @@ border: 1px black solid;
 
 <div class="ox-hugo-table my-table-5">
 
-| 1  | 1  | 0 | 1 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 15    |
-|----|----|---|---|---|---|---|---|---|---|---|---|-------|
-| 2  | 11 | 0 | 1 | 2 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | 825   |
-| 3  | 29 | 0 | 0 | 2 | 0 | 0 | 0 | 0 | 0 | 0 | 1 | 725   |
-| 4  | 11 | 0 | 0 | 2 | 1 | 1 | 0 | 0 | 0 | 0 | 0 | 1925  |
-| 5  | 13 | 0 | 0 | 2 | 1 | 0 | 1 | 0 | 0 | 0 | 0 | 2275  |
-| 6  | 17 | 0 | 0 | 2 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 425   |
-| 7  | 13 | 1 | 1 | 1 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 390   |
-| 8  | 11 | 1 | 1 | 1 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | 330   |
-| 9  | 29 | 1 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 1 | 290   |
-| 10 | 11 | 1 | 0 | 1 | 1 | 1 | 0 | 0 | 0 | 0 | 0 | 770   |
-| 11 | 13 | 1 | 0 | 1 | 1 | 0 | 1 | 0 | 0 | 0 | 0 | 910   |
-| 12 | 17 | 1 | 0 | 1 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 170   |
-| 13 | 13 | 2 | 1 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 156   |
-| 14 | 11 | 2 | 1 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | 132   |
-| 15 | 29 | 2 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 1 | 116   |
-| 16 | 11 | 2 | 0 | 0 | 1 | 1 | 0 | 0 | 0 | 0 | 0 | 308   |
-| 17 | 13 | 2 | 0 | 0 | 1 | 0 | 1 | 0 | 0 | 0 | 0 | 364   |
-| 18 | 17 | 2 | 0 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 68    |
-| 19 | 1  | 2 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 4     |
-| 20 | 1  | 1 | 1 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 30    |
-| 21 | 1  | 0 | 2 | 2 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 225   |
-| 22 | 11 | 0 | 2 | 3 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | 12375 |
-| 23 | 29 | 0 | 1 | 3 | 0 | 0 | 0 | 0 | 0 | 0 | 1 | 10875 |
-| 24 | 11 | 0 | 1 | 3 | 1 | 1 | 0 | 0 | 0 | 0 | 0 | 28875 |
-| 25 | 29 | 0 | 0 | 3 | 1 | 0 | 0 | 0 | 0 | 0 | 1 | 25375 |
-| 26 | 11 | 0 | 0 | 3 | 2 | 1 | 0 | 0 | 0 | 0 | 0 | 67375 |
-| 27 | 13 | 0 | 0 | 3 | 2 | 0 | 1 | 0 | 0 | 0 | 0 | 79625 |
-| 28 | 17 | 0 | 0 | 3 | 1 | 0 | 0 | 1 | 0 | 0 | 0 | 14875 |
-| 29 | 13 | 1 | 1 | 2 | 1 | 0 | 1 | 0 | 0 | 0 | 0 | 13650 |
-| 30 | 17 | 1 | 1 | 2 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 2550  |
-| 31 | 13 | 2 | 2 | 1 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 2340  |
-| 32 | 11 | 2 | 2 | 1 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | 1980  |
-| 33 | 29 | 2 | 1 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 1 | 1740  |
-| 34 | 11 | 2 | 1 | 1 | 1 | 1 | 0 | 0 | 0 | 0 | 0 | 4620  |
-| 35 | 29 | 2 | 0 | 1 | 1 | 0 | 0 | 0 | 0 | 0 | 1 | 4060  |
-| 36 | 11 | 2 | 0 | 1 | 2 | 1 | 0 | 0 | 0 | 0 | 0 | 10780 |
-| 37 | 13 | 2 | 0 | 1 | 2 | 0 | 1 | 0 | 0 | 0 | 0 | 12740 |
-| 38 | 17 | 2 | 0 | 1 | 1 | 0 | 0 | 1 | 0 | 0 | 0 | 2380  |
-| 39 | 13 | 3 | 1 | 0 | 1 | 0 | 1 | 0 | 0 | 0 | 0 | 2184  |
-| 40 | 17 | 3 | 1 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 408   |
-| 41 | 19 | 3 | 0 | 0 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 152   |
-| 42 | 23 | 2 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 1 | 0 | 92    |
-| 43 | 19 | 2 | 0 | 1 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 380   |
-| 44 | 23 | 1 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | 1 | 0 | 230   |
-| 45 | 19 | 1 | 0 | 2 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 950   |
-| 46 | 23 | 0 | 0 | 2 | 0 | 0 | 0 | 0 | 0 | 1 | 0 | 575   |
-| 47 | 19 | 0 | 0 | 3 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 2375  |
-| 48 | 11 | 0 | 0 | 3 | 1 | 1 | 0 | 0 | 0 | 0 | 0 | 9625  |
-| 49 | 13 | 0 | 0 | 3 | 1 | 0 | 1 | 0 | 0 | 0 | 0 | 11375 |
-| 50 | 17 | 0 | 0 | 3 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 2125  |
+| 1  | 1  | 0 | 1 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 15   |
+|----|----|---|---|---|---|---|---|---|---|---|---|------|
+| 2  | 11 | 0 | 1 | 2 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | 825  |
+| 3  | 29 | 0 | 0 | 2 | 0 | 0 | 0 | 0 | 0 | 0 | 1 | 725  |
+| 4  | 11 | 0 | 0 | 2 | 1 | 1 | 0 | 0 | 0 | 0 | 0 | 1925 |
+| 5  | 13 | 0 | 0 | 2 | 1 | 0 | 1 | 0 | 0 | 0 | 0 | 2275 |
+| 6  | 17 | 0 | 0 | 2 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 425  |
+| 7  | 13 | 1 | 1 | 1 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 390  |
+| 8  | 11 | 1 | 1 | 1 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | 330  |
+| 9  | 29 | 1 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 1 | 290  |
+| 10 | 11 | 1 | 0 | 1 | 1 | 1 | 0 | 0 | 0 | 0 | 0 | 770  |
+| 11 | 13 | 1 | 0 | 1 | 1 | 0 | 1 | 0 | 0 | 0 | 0 | 910  |
+| 12 | 17 | 1 | 0 | 1 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 170  |
+| 13 | 13 | 2 | 1 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 156  |
+| 14 | 11 | 2 | 1 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | 132  |
+| 15 | 29 | 2 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 1 | 116  |
+| 16 | 11 | 2 | 0 | 0 | 1 | 1 | 0 | 0 | 0 | 0 | 0 | 308  |
+| 17 | 13 | 2 | 0 | 0 | 1 | 0 | 1 | 0 | 0 | 0 | 0 | 364  |
+| 18 | 17 | 2 | 0 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 68   |
+| 19 | 1  | 2 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 4    |
+| 20 | 1  | 1 | 1 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 30   |
 
 </div>
+
+Looks good, but adding in headers now.
 
 <a id="code-snippet--FORMAT-TABLE-for-iterate"></a>
 ```elisp
@@ -868,27 +821,48 @@ border: 1px black solid;
   (setf value (cons '(Iteration State 2 3 5 7 11 13 17 19 23 29 Amount) value)))
 ```
 
-#+begin_export html
 <style>
-.my-table-6 tr:nth-child(even){
-background-color: #3b3f4a;
+/* Base table styling */
+.my-table-6 {
+  border-collapse: collapse;
 }
-/*
-.my-table-6 thead tr th:nth-child(12) {
-  background-color:red;
+
+/* Header cells */
+.my-table-6 thead th {
+  font-weight: normal;
+  text-align: center;
+  background-color: #575551;   /* overall header background */
+  color: #f0f0f0;
+  padding: 6px 8px;
+  border-bottom: 1px white solid;
+  border-top: 2px white solid;
+  border-right: 2px white solid;
+  border-left: 2px white solid;
 }
-*/
-.my-table-6 th{
-font-weight:normal;
-text-align: center;
-background-color: #3b3f4a;
-padding:5px;
-border: 0;
-}
+
 /* Body cells */
-.my-table-6 td{
-padding:5px;
-border: 1px black solid;
+.my-table-6 td {
+  padding: 4px 8px;
+  text-align: center;
+  border: 1px black solid;
+}
+
+/* Row striping (body only) */
+.my-table-6 tbody tr:nth-child(even) {
+  background-color: #2f2f2f;
+}
+
+/* Highlight factor columns 11–29: columns 6–11 (header + body) */
+.my-table-6 thead th:nth-child(n+6):nth-child(-n+11),
+.my-table-6 tbody td:nth-child(n+6):nth-child(-n+11) {
+  background-color: #42403c;  /* slightly different tone */
+}
+
+/* Optional: make the "Value" column pop a bit */
+.my-table-6 thead th:nth-child(12),
+.my-table-6 tbody td:nth-child(12) {
+  background-color: #3b3f4a;
+  font-weight: bold;
 }
 </style>
 
@@ -918,40 +892,12 @@ border: 1px black solid;
 | 18        | 17    | 2 | 0 | 0 | -- | -- | -- | 1  | -- | -- | -- | 68     |
 | 19        | 1     | 2 | 0 | 0 | -- | -- | -- | -- | -- | -- | -- | 4      |
 | 20        | 1     | 1 | 1 | 1 | -- | -- | -- | -- | -- | -- | -- | 30     |
-| 21        | 1     | 0 | 2 | 2 | -- | -- | -- | -- | -- | -- | -- | 225    |
-| 22        | 11    | 0 | 2 | 3 | -- | 1  | -- | -- | -- | -- | -- | 12375  |
-| 23        | 29    | 0 | 1 | 3 | -- | -- | -- | -- | -- | -- | 1  | 10875  |
-| 24        | 11    | 0 | 1 | 3 | 1  | 1  | -- | -- | -- | -- | -- | 28875  |
-| 25        | 29    | 0 | 0 | 3 | 1  | -- | -- | -- | -- | -- | 1  | 25375  |
-| 26        | 11    | 0 | 0 | 3 | 2  | 1  | -- | -- | -- | -- | -- | 67375  |
-| 27        | 13    | 0 | 0 | 3 | 2  | -- | 1  | -- | -- | -- | -- | 79625  |
-| 28        | 17    | 0 | 0 | 3 | 1  | -- | -- | 1  | -- | -- | -- | 14875  |
-| 29        | 13    | 1 | 1 | 2 | 1  | -- | 1  | -- | -- | -- | -- | 13650  |
-| 30        | 17    | 1 | 1 | 2 | -- | -- | -- | 1  | -- | -- | -- | 2550   |
-| 31        | 13    | 2 | 2 | 1 | -- | -- | 1  | -- | -- | -- | -- | 2340   |
-| 32        | 11    | 2 | 2 | 1 | -- | 1  | -- | -- | -- | -- | -- | 1980   |
-| 33        | 29    | 2 | 1 | 1 | -- | -- | -- | -- | -- | -- | 1  | 1740   |
-| 34        | 11    | 2 | 1 | 1 | 1  | 1  | -- | -- | -- | -- | -- | 4620   |
-| 35        | 29    | 2 | 0 | 1 | 1  | -- | -- | -- | -- | -- | 1  | 4060   |
-| 36        | 11    | 2 | 0 | 1 | 2  | 1  | -- | -- | -- | -- | -- | 10780  |
-| 37        | 13    | 2 | 0 | 1 | 2  | -- | 1  | -- | -- | -- | -- | 12740  |
-| 38        | 17    | 2 | 0 | 1 | 1  | -- | -- | 1  | -- | -- | -- | 2380   |
-| 39        | 13    | 3 | 1 | 0 | 1  | -- | 1  | -- | -- | -- | -- | 2184   |
-| 40        | 17    | 3 | 1 | 0 | -- | -- | -- | 1  | -- | -- | -- | 408    |
-| 41        | 19    | 3 | 0 | 0 | -- | -- | -- | -- | 1  | -- | -- | 152    |
-| 42        | 23    | 2 | 0 | 0 | -- | -- | -- | -- | -- | 1  | -- | 92     |
-| 43        | 19    | 2 | 0 | 1 | -- | -- | -- | -- | 1  | -- | -- | 380    |
-| 44        | 23    | 1 | 0 | 1 | -- | -- | -- | -- | -- | 1  | -- | 230    |
-| 45        | 19    | 1 | 0 | 2 | -- | -- | -- | -- | 1  | -- | -- | 950    |
-| 46        | 23    | 0 | 0 | 2 | -- | -- | -- | -- | -- | 1  | -- | 575    |
-| 47        | 19    | 0 | 0 | 3 | -- | -- | -- | -- | 1  | -- | -- | 2375   |
-| 48        | 11    | 0 | 0 | 3 | 1  | 1  | -- | -- | -- | -- | -- | 9625   |
-| 49        | 13    | 0 | 0 | 3 | 1  | -- | 1  | -- | -- | -- | -- | 11375  |
-| 50        | 17    | 0 | 0 | 3 | -- | -- | -- | 1  | -- | -- | -- | 2125   |
 
 </div>
 
-So, the FSM works, but it's too slow.
+And this is exactly what we got before.
+
+So, the FSM works. But it's too slow.
 
 Building this first version was necessary in order to understand the problem.
 
@@ -1170,11 +1116,11 @@ CL-USER> (print *f-count*)
 CL-USER>
 ```
 
-Interesting results. `0 bytes consed` makes me smile a bit -- clearly not doing much with lists!
+Interesting results. `0 bytes consed` makes me smile a bit.
 
-But most importantly, we get the correct answer. It takes \\( 1,539,669,807,660,924 \\) iterations to get the \\( 2^{10001^{st}\text{ prime }} \\).
+But most importantly, we get the correct answer in a reasonable amount of time.  It takes \\( 1,539,669,807,660,924 \\) iterations to get the \\( 2^{10001^{st}\text{ prime }} \\).
 
-\\( 90 \\) seconds is not too bad, in my view. More speed can be had by setting optimizations:
+\\( 90 \\) seconds is not too bad. More speed can be had by setting optimizations. Let's do that.
 
 `(declare (optimize (speed 3) (safety 0)))`
 
