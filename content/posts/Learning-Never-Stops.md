@@ -1,5 +1,5 @@
 ---
-title: "Learning Never Stop"
+title: "Learning Never Stops"
 author: ["Karl Stump"]
 date: 2025-11-14
 tags: ["programming", "lisp"]
@@ -7,11 +7,13 @@ draft: false
 math: true
 ---
 
-Does it all really come down to _Cogito, ergo sum_?
+Does it all really come down to _cogito, ergo sum_?
 
 “I think, therefore I am,” Descartes wrote that as he wrestled with radical skepticism.
 
 For me, it’s just as true—maybe truer—to say: “I learn, therefore I am.”
+
+Which, by the way, in Latin is _disco ergo sum_.
 
 The other day, I was reading part of the SBCL manual.
 
@@ -77,6 +79,6 @@ Learning never stops.
 
 {{< figure src="/ox-hugo/learning-never-stops.png" class="center" >}}
 
-_Cogito, ergo sum_.
+_Cogito, ergo sum_?
 
-I learn, therefore I am.
+_Disco, ergo sum_!
