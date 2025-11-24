@@ -34,70 +34,53 @@ So, what's a lambda?
 
 In demonstrating lambda in Lisp, I'm going to assume that the examples are sufficiently clear that even someone with no experience with Lisp, yet knowledgeable in some other programming language, will have not much trouble following. As such, I will leave a lot of Lisp details unsaid.
 
-{{< figure src="/ox-hugo/learning-never-stops.png" class="center" >}}
+Below is a screenshot of a Lisp REPL. A REPL is a read, eval, print loop -- you can think of it as a Lisp interactive window. For details see the [wiki entry](https://en.wikipedia.org/wiki/Read%E2%80%93eval%E2%80%93print_loop).
 
-In the REPL (Read, Eval, Print Loop; think of it as Lisp's interactive window, and, if severely interested, you might try [REPL](https://en.wikipedia.org/wiki/Read%E2%80%93eval%E2%80%93print_loop) on Wiki), let's define a lambda ...
+So, it works like this. In the REPL, we begin to define our lambda:
 
 {{< figure src="/ox-hugo/definingLambda.png" class="center" >}}
 
-Press `return`, and the REPL evaluates the expression, prints the "printed representation" of the lambda.
+And now when we press `return`, and the expression is read, evaluated, and the result is returned.
 
 {{< figure src="/ox-hugo/lambdaDefined.png" class="center" >}}
 
-What is a lambda? It says it's a function.
+So, what is a lambda?
 
-Is there more detail available?
+You can see that it says it's a `#<Function ...>`. This is called a printed representation. A representation of what? A representation of a function. A function object was returned, and the printed representation signals that fact.
 
-In fact, there is.
-
-Right-clicking on the presentation gives a context menu.
-
-Selecting inspect...
+Now, we can inspect the object. Right-clicking on the presentation gives a context menu.
 
 {{< figure src="/ox-hugo/inspectLambda.png" class="center" >}}
 
-... gives us some details.
+Now, selecting "inspect" gives us some details. Specifically, name, arglist, type, and code.
 
 {{< figure src="/ox-hugo/inspectLambda2.png" class="center" >}}
 
-The CODE line looks interesting. Click it.
+Now, clicking the code line, we get \\( \ldots \\)
 
 {{< figure src="/ox-hugo/disassembly.png" class="center" >}}
 
-Assembler?
+An assembler listing, which may be surprising.
 
-Yup, assembler.
+So, the lambda expression --- essentially a "hello world" program --- was typed into the REPL, and then enter was pressed. This caused the code to be evaluated, and a function was created, and returned, and we can inspect it, even down to the assembler.
 
-So, the lambda expression was typed into the REPL, and being evaluated, a function was created, and of course, a function at some point must be code on the machine, and yes, that assembler is the actual code.
+But if it's code, if we have a "function object" returned to us, then we should be able to execute it. So, back in the REPL, we want to invoke, or call, the lambda.
 
-But if it's code, then let's execute it.
+But how? We don't have a name for the function. It's anonymous. The function exists but we can't tell Lisp to evaluate it, because you don't have a name for it.
 
-Back in the REPL, invoke the lambda!
+This raises the question, then, what good is a lambda if it doesn't have a name?
 
-Call it, run it. What are you waiting for?
+We will see how to deal with that problem in a bit. And, well, it's not exactly true that we can't invoke this function. The fact is that the REPL, behind the scenes, has given a temporary name to the lambda function, which is the symbol `*`. Note, this is only temporary.
 
-But how to call it?
+Now, how to use it?
 
-Ah, good point. Well, it can't be done, because it doesn't have a name. It's anonymous. Nope, you can't
-call it.
-
-Okay, so ... ?
-
-Well, actually, I lied a bit. Here, fortunately, the REPL can help us.
-
-In the environment of the REPL, behind the scenes, a temporary name has, in fact, been given to the lambda. But please note that this is entirely a convenience feature supplied by the REPL.
-
-What is this temporary name? It's the symbol `=*=`. So, the lambda does have a name, temporarily. It's `=*=`
-
-So, let's use it, and invoke the lambda. How?
-
-We can use `funcall`.
-
-`funcall` is a function that takes a  function as it first parameter, and optionally takes additional arguments.
+We can use `funcall`. `funcall` is a function that takes a function as it first parameter, and optionally takes additional arguments. Like this:
 
 {{< figure src="/ox-hugo/useAsterisk.png" class="center" >}}
 
-The result of `funcall` invoking the lambda is returned, it's the string returned by the lambda, "hello world" --- and note that now `*` refers to the string "hello world" -- so, we can't use `*` to invoke the lambda (and with nothing referring to the lambda, the garbage collector will dispose of it).
+What just happened there?
+
+We passed the lambda, named `*` to the function `funcall`, which invoked the lambda. The lambda returned the string, and funcall returned the string, and we see it displayed in the REPL. (And note, now, `*` is no longer the name of the lambda).
 
 So, let's take a pause and ask the question: what's a lambda?
 
@@ -111,57 +94,110 @@ So, let's take a pause and ask the question: what's a lambda?
 
 That's a good start. Let's see how we might use a lambda.
 
+
+## Using Lambda in Lisp {#using-lambda-in-lisp}
+
+Let's define a lambda, like this:
+
+```lisp
+(lambda (x)
+  (+ 1 x))
+```
+
+What have we said? Create a function (a lambda) that takes one argument, 'x' and adds one to it.
+
+Excellent, now in the REPL let's put this lambda directly in `funcall`, and also, let's make it so that `funcall` passes this value 100 to the lambda, like this:
+
 {{< figure src="/ox-hugo/funcallLambda.png" class="center" >}}
 
-Wait -- what?
+And you see that we get the value 101 returned in the REPL.
 
-We just created a lambda -- "on the fly" -- it's anonymous, doesn't have a name, but since we're passing it to `funcall` it doesn't need a name. And when the evaluation of the lambda is complete it will be disposed of.
+So, what just happened there?
+
+We just created a lambda -- "on the fly" -- it's anonymous, doesn't have a name, but since we're creating it in the `funcall` it doesn't need a name. `funcall` calls the anonymous function passing it the value 100, and the function does what we designed it to do, adds 1, and returns the result, which is displayed.
 
 Pretty neat.
 
-Note also that `funcall` is passed not only a lambda but also the value 100. When `funcall` calls the lambda it will pass it that value. The lambda is defined such that it takes a parameter.  The lambda code is executed and returns the value 101.
-
 Of course, we could just invoke the `plus` function using the symbol
-`+`.
+`+`. Or we could pass `+` to `funcall`, too.
 
-Or we could pass `+` to `funcall`, too.
-
-(Don't be confused by the `#'` prepended to the `+` symbol. This is simply the Lisp way of indicating that the function value of `+` is wanted.)
+Like this:
 
 {{< figure src="/ox-hugo/funcallPlus.png" class="center" >}}
 
-Interesting. And it gets you thinking: might some of this be useful?
+(Don't be confused by the `#'` prepended to the `+` symbol. This is simply the Lisp way of indicating that the function value of `+` is wanted.)
 
-More specifically:
+Sp. this is interesting. And it gets you thinking: might some of this, the lambda, and the passing functions around to other functions, might some of it be useful?
 
-1.  Is defining a function without a name useful?
-2.  Is passing around a function useful?
+More specifically is it useful to:
 
-The answer turns out to be emphatically yes.
+1.  Define a function without a name?
+2.  To pass functions to other functions?
 
-The myriad of applications and details is far beyond the scope of this brief discussion.
+The answer turns out to be emphatically yes. The myriad of applications and details is far beyond the scope of this brief discussion.
 
 However, in Lisp there are lots of functions that take a function as an argument, not just `funcall`.
 
-For example, `mapcar` is one such function. Rather than tell you what `mapcar` does, let's just see how it works.
+For example, `mapcar` is one such function.
+
+```lisp
+(mapcar #'+ '(1 2 3) '(3 3 3) '(2 2 2))
+```
+
+The result is:
+
+(6 7 8)
+
+`mapcar` has called the function `#'+` ('plus') passing each list, and collected the results.
+
+But we can use other arithmetic functions too, which in the REPL looks like this:
 
 {{< figure src="/ox-hugo/mapcar.png" class="center" >}}
 
-How would you describe it?
-
-It looks like `mapcar` passes the first element of each list to the given function, collecting the results from each iteration.
-
 Could a lambda be used? Let's try.
 
-Here's a lambda that computes averages. It takes the first number from the three lists, then adds them together and divides by three.
+Let's create a lambda that computers the average of three arguments, and pass that to `mapcar`, like this:
+
+```lisp
+(mapcar (lambda (x y z)
+          (/ (+ x y z) 3)) '(1 2 3) '(3 3 3) '(2 2 2))
+```
+
+And the result is:
+
+(2 7/3 8/3)
+
+In the REPL it looks like this:
 
 {{< figure src="/ox-hugo/average.png" class="center" >}}
 
 Here's one that rearranges the numbers in some way. Do you see how?
 
+```lisp
+(mapcar (lambda (x y z)
+          (list x y z)) '(1 2 3) '(3 3 3) '(2 2 2))
+```
+
+Results:
+
+((1 3 2) (2 3 2) (3 3 2))
+
+Or in the REPL:
+
 {{< figure src="/ox-hugo/rearrange.png" class="center" >}}
 
-Here's one that keeps a running total for each iteration.
+Here's one that's more complicated, keeping a running total:
+
+```lisp
+(let ((running-total 0))
+  (mapcar (lambda (x y z)
+            (setq running-total (+ x y z running-total)))
+          '(1 2 3) '(3 3 3) '(2 2 2)))
+```
+
+(6 13 21)
+
+In the REPL
 
 {{< figure src="/ox-hugo/runningTotal.png" class="center" >}}
 
@@ -175,10 +211,14 @@ That lambda is a very important case: it's a `closure`.
 > "Sometimes it's called a closure, other times a saved lexical environment. Or, as some of us like to say, let over lambda. Whatever terminology you use, mastering this concept of a closure is the first step to becoming a professional lisp programmer. In fact, this skill is vital for the proper use of many modern programming languages, even ones that don't explicitly contain let or lambda, such as Perl or Javascript."
 > -- [Doug Hoyte](https://letoverlambda.com/index.cl/guest/chap2.html)
 
-Among the modern programming languages that Hoyte didn't mention at
-the time of his writing, but could now, is Java.
-
 Let's a define a function.
+
+```lisp
+(defun makeClosure ()
+  (let ((counter 0))
+    (lambda ()
+      (setq counter (1+ counter)))))
+```
 
 {{< figure src="/ox-hugo/closure1.png" class="center" >}}
 
@@ -205,9 +245,6 @@ Okay, we have a function, and a named one at that -- a named function
 that creates and returns unnamed functions which are `closures`. Let's invoke it.
 
 {{< figure src="/ox-hugo/closure1.1.png" class="center" >}}
-
-Notice that the "printed representation" of the lambda now includes
-the word `closure`.
 
 Now, let's use `funcall` on the `closure` from `makeClosure`.
 
@@ -251,6 +288,8 @@ Assume that we have a sensor that has upper and lower limits of 100 and 0, and w
 
 That's enough Lisp for now.
 
+We have seen lambda in Lisp. A lambda is an anonymous function. There's also a special type of lambda called a closure, which has enclosed over local variables.
+
 Now, how does this work out in Java?
 
 
@@ -261,6 +300,33 @@ Now, how does this work out in Java?
 > Williams
 
 Suppose you have data in a file somewhere for baseball players. Like this sample:
+
+<style>
+.baseball tr:nth-child(even){
+background-color: #3b3f4a;
+}
+/*
+.baseball thead tr th:nth-child(12) {
+  background-color:red;
+}
+*/
+.baseball th{
+font-weight:normal;
+text-align: center;
+background-color: #3b3f4a;
+padding:5px;
+border: 0;
+}
+/* Body cells */
+.baseball td{
+padding:5px;
+border: 1px black solid;
+}
+</style>
+
+<style>.baseball table { text-align: center;  width: 80%;  margin: 0 auto;  }</style>
+
+<div class="ox-hugo-table baseball">
 
 | Player          | Position | Games | AtBats | Runs | Hits | HR  | RBI  | Avg |
 |-----------------|----------|-------|--------|------|------|-----|------|-----|
@@ -290,9 +356,9 @@ Suppose you have data in a file somewhere for baseball players. Like this sample
 | FrankRobinson   | RF       | 2808  | 10006  | 1829 | 2943 | 586 | 1812 | 294 |
 | HonusWagner     | SS       | 2792  | 10430  | 1736 | 3430 | 101 | 1732 | 329 |
 
-And you want to put this into some sort of structure and search
-it. So, you come up with a baseball player class for this data
-something like this:
+</div>
+
+And you want to put this into some sort of structure and search it. So, you come up with a baseball player class for this data something like this:
 
 {{< figure src="/ox-hugo/baseballPlayer.png" class="center" >}}
 
