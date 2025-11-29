@@ -21,6 +21,10 @@ If you would like see a number of different ways the LCM can be calculated, go t
 
 We need to factor all the number from 2 to 20. So, let's do some prime factoring!
 
+<style>.table-1 table { text-align: center;  width: 30%;  margin: 0 auto;  }</style>
+
+<div class="ox-hugo-table table-1">
+
 | Num | Prime Factors    |
 |-----|------------------|
 | 20  | \\( 5 \* 2^2 \\) |
@@ -43,6 +47,8 @@ We need to factor all the number from 2 to 20. So, let's do some prime factoring
 | 3   | \\( 3 \\)        |
 | 2   | \\( 2 \\)        |
 
+</div>
+
 Now, for each prime number, take the one with the greatest exponent.
 
 Therefore:
@@ -63,7 +69,7 @@ So, that's the answer. But I'd like to write a program. How?
 
 The key insight is that we need to know how many, the count, of each prime factor for the numbers from 2 to 20, which is just saying that we need the prime numbers exponent.
 
-We've shown we can do it by hand, but how to find this exponent for each prime below 20?
+We've shown we can do it by hand, but how to find this exponent for each prime below 20? This is basic algebra.
 
 We can start with the prime number 2. We know that:
 
@@ -71,7 +77,7 @@ We can start with the prime number 2. We know that:
  2^x \le 20
 \end{equation}
 
-Ah, so, we need to take the log of both sides.
+So, taking the log of both sides.
 
 \begin{equation}
 \log 2^x \le \log 20
@@ -105,7 +111,6 @@ But we just want the `floor`. So, this will work:
 
 <a id="code-snippet--get-exponent-floor"></a>
 ```lisp
-
 (floor (/ (log 20) (log 2)))
 ```
 
@@ -140,6 +145,10 @@ in a Lisp list:
 (get-primes-exp)
 ```
 
+<style>.table-2 table { text-align: center;  width: 30%;  margin: 0 auto;  }</style>
+
+<div class="ox-hugo-table table-2">
+
 | 2  | 4 |
 |----|---|
 | 3  | 2 |
@@ -150,12 +159,18 @@ in a Lisp list:
 | 17 | 1 |
 | 19 | 1 |
 
-Or, more nicely formatted:
+</div>
+
+With headers:
 
 <a id="code-snippet--get-results-elisp"></a>
 ```elisp
 (cons '("Prime Factor" "Exponent") (cons 'hline table))
 ```
+
+<style>.table-3 table { text-align: center;  width: 30%;  margin: 0 auto;  }</style>
+
+<div class="ox-hugo-table table-3">
 
 | Prime Factor | Exponent |
 |--------------|----------|
@@ -167,6 +182,8 @@ Or, more nicely formatted:
 | 13           | 1        |
 | 17           | 1        |
 | 19           | 1        |
+
+</div>
 
 But we need to calculate a result.
 

@@ -4,6 +4,7 @@ author: ["Karl Stump"]
 date: 2024-11-29
 tags: ["CPP", "Leetcode"]
 draft: false
+math: true
 ---
 
 Okay, this is the fifteenth question from the "Top Interview 150."
@@ -30,15 +31,25 @@ left-to-right, always compare with the child to the left (and the left-most chil
 compare against). The same is true for moving right-to-left, where the comparison is made to the
 child on the right, and the rightmost child has no child to the right to compare against.
 
+<style>.table-1 table { text-align: center;  width: 60%;  margin: 0 auto;  }</style>
+
+<div class="ox-hugo-table table-1">
+
 | Rating        | 1 | 0 | 2 |
 |---------------|---|---|---|
 | Initial Candy | 1 | 1 | 1 |
 | Left to Right | 1 | 1 | 2 |
 | Right to Left | 2 | 1 | 2 |
 
+</div>
+
 Total = 5.
 
 Let's do another:
+
+<style>.table-1 table { text-align: center;  width: 60%;  margin: 0 auto;  }</style>
+
+<div class="ox-hugo-table table-1">
 
 | Rating        | 1 | 2 | 87 | 87 | 87 | 2 | 1 |
 |---------------|---|---|----|----|----|---|---|
@@ -46,9 +57,11 @@ Let's do another:
 | Left to Right | 1 | 2 | 3  | 1  | 1  | 1 | 1 |
 | Right to Left | 1 | 2 | 3  | 1  | 3  | 2 | 1 |
 
+</div>
+
 Total = 13.
 
-{{< highlight C >}}
+```C
 #include <vector>
 #include <gtest/gtest.h>
 
@@ -63,9 +76,9 @@ public:
     // child has nothing to check
     for (int i = 1; i < ratings.size(); i++) {
       if (ratings[i] > ratings[i - 1]) {
-        // rating is higher, so
-        if (candyPerChild[i] <= candyPerChild[i - 1]){
-          candyPerChild[i] = candyPerChild[i-1] + 1;
+	// rating is higher, so
+	if (candyPerChild[i] <= candyPerChild[i - 1]){
+	  candyPerChild[i] = candyPerChild[i-1] + 1;
         }
       }
     }
@@ -73,8 +86,8 @@ public:
     // child has nothing to check
     for (int i = ratings.size() - 2; i >= 0; i--) {
       if (ratings[i] > ratings[i + 1]){
-        if (candyPerChild[i] <= candyPerChild[i + 1]){
-          candyPerChild[i] = candyPerChild[i + 1] + 1;
+	if (candyPerChild[i] <= candyPerChild[i + 1]){
+	  candyPerChild[i] = candyPerChild[i + 1] + 1;
         }
       }
     }
@@ -137,26 +150,26 @@ int main(int argc, char **argv) {
   testing::InitGoogleTest(&argc, argv);
   return RUN_ALL_TESTS();
 }
-{{< /highlight >}}
+```
 
 I have a simple Makefile:
 
-{{< highlight makefile >}}
+```makefile
 OBJS = candy.o
 
 candy: $(OBJS)
-        g++ -Wall -g -o candy $(OBJS) -lgtest -lgtest_main
+	g++ -Wall -g -o candy $(OBJS) -lgtest -lgtest_main
 
 candy.o: candy.cpp
-        g++ -Wall -g -c candy.cpp
+	g++ -Wall -g -c candy.cpp
 
 clean:
-        rm candy $(OBJS)
-{{< /highlight >}}
+	rm candy $(OBJS)
+```
 
 And here are my google test results:
 
-{{< highlight bash >}}
+```bash
 [==========] Running 4 tests from 1 test suite.
 [----------] Global test environment set-up.
 [----------] 4 tests from Candy
@@ -173,7 +186,7 @@ And here are my google test results:
 [----------] Global test environment tear-down
 [==========] 4 tests from 1 test suite ran. (0 ms total)
 [  PASSED  ] 4 tests.
-{{< /highlight >}}
+```
 
 {{< figure src="/ox-hugo/complexity-candy.png" >}}
 

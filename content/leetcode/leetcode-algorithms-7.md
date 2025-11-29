@@ -4,6 +4,7 @@ author: ["Karl Stump"]
 date: 2024-11-24
 tags: ["CPP", "Leetcode"]
 draft: false
+math: true
 ---
 
 Okay, this is the seventh question from the "Top Interview 150."
@@ -33,6 +34,10 @@ Here's a table showing profits for the given day purchased and sold. So, regardi
 imagine that you purchase on the day the price is 7, and then working across that row, each column
 shows the profit for the given sale price, which prices are occurring on successive days.
 
+<style>.table-1 table { text-align: center;  width: 50%;  margin: 0 auto;  }</style>
+
+<div class="ox-hugo-table table-1">
+
 |   | 7 | 1  | 5  | 3  | 6  | 4  |
 |---|---|----|----|----|----|----|
 | 7 | x | -6 | -2 | -4 | -1 | -3 |
@@ -42,6 +47,8 @@ shows the profit for the given sale price, which prices are occurring on success
 | 6 |   |    |    |    | x  | -2 |
 | 4 |   |    |    |    |    | x  |
 
+</div>
+
 It's easy to see that purchasing on the first day at a price of 7 does not lead to any
 profit. The most you can do is limit your losses by selling at price 6 for a mere -1 loss.
 
@@ -50,7 +57,7 @@ But iterating over the list, that cannot possibly be known up-front.
 And that idea, that "we cannot know," leads to the idea that there is nothing to do but
 "brute-force," calculate all the profit-loss values in the table, something like this pseudo-code:
 
-{{< highlight C >}}
+```C
 int prices[] = {7, 1, 5, 3, 6, 4};
 int max_profit = 0;
 int profit = 0;
@@ -64,9 +71,13 @@ for (int i = 0; < prices.size(); i++){
     }
   }
  }
-{{< /highlight >}}
+```
 
 We can make an interesting chart, pretty self-explanatory:
+
+<style>.table-1 table { text-align: center;  width: 70%;  margin: 0 auto;  }</style>
+
+<div class="ox-hugo-table table-1">
 
 | Outside Iteration Step | Inside Iterations | Running Total | Potential Max Profit Found |
 |------------------------|-------------------|---------------|----------------------------|
@@ -76,7 +87,9 @@ We can make an interesting chart, pretty self-explanatory:
 | 4                      | 2                 | 15            | 3                          |
 | 5                      | 1                 | 16            | -2                         |
 
-And you can see, at step 5, we already are at 16 iterations &#x2013; and that's O(n<sup>2</sup>) &#x2013; as we expected
+</div>
+
+And you can see, at step 5, we already are at 16 iterations -- and that's O(n^2) -- as we expected
 from such nested loops. In other words, the search space for finding the maximum profit is going to
 grow enormous very fast as the list size grows.
 
@@ -95,13 +108,13 @@ this lower price than the higher price.
 This above point is obvious, after all, but easy to overlook.
 
 But there's an even greater significance, also easy to overlook, which is that using this observation, we can reduce our
-search space from O(n<sup>2</sup>) to O(n). Amazing.
+search space from O(n^2) to O(n). Amazing.
 
 Here's the code and tests.
 
 Notice, there is only one loop. So, O(n) nirvana.
 
-{{< highlight C >}}
+```C
 #include <vector>
 #include <gtest/gtest.h>
 
@@ -114,7 +127,7 @@ public:
       if (*sell > buy)
         profit = std::max(profit, *sell - buy);
       else
-        buy = *sell;
+	buy = *sell;
     }
     return profit;
   }
@@ -151,26 +164,26 @@ int main(int argc, char **argv) {
   testing::InitGoogleTest(&argc, argv);
   return RUN_ALL_TESTS();
 }
-{{< /highlight >}}
+```
 
 I have a simple Makefile:
 
-{{< highlight makefile >}}
+```makefile
 OBJS = max-profit.o
 
 remove-element: $(OBJS)
-        g++ -Wall -g -o max-profit $(OBJS) -lgtest -lgtest_main
+	g++ -Wall -g -o max-profit $(OBJS) -lgtest -lgtest_main
 
 remove-element.o: max-profit.cpp
-        g++ -Wall -g -c max-profit.cpp
+	g++ -Wall -g -c max-profit.cpp
 
 clean:
-        rm max-profit $(OBJS)
-{{< /highlight >}}
+	rm max-profit $(OBJS)
+```
 
 Now, when I run, the tests are passing:
 
-{{< highlight bash >}}
+```bash
 [==========] Running 2 tests from 1 test suite.
 [----------] Global test environment set-up.
 [----------] 2 tests from MaxProfit
@@ -183,7 +196,7 @@ Now, when I run, the tests are passing:
 [----------] Global test environment tear-down
 [==========] 2 tests from 1 test suite ran. (0 ms total)
 [  PASSED  ] 2 tests.
-{{< /highlight >}}
+```
 
 {{< figure src="/ox-hugo/complexity-buy-sell.png" >}}
 

@@ -4,6 +4,7 @@ author: ["Karl Stump"]
 date: 2024-11-26
 tags: ["CPP", "Leetcode"]
 draft: false
+math: true
 ---
 
 Okay, this is the thirteenth question from the "Top Interview 150."
@@ -25,12 +26,18 @@ Read the [description](https://leetcode.com/problems/h-index/description/?envTyp
 
 Given: `[1,2,3,4]` we return, `[24,12,8,6]`. How does this work?
 
-| Index |        Calculation        |        Return          |
-|-------|---------------------------|------------------------|
-| 0     | 2 \* 3 \* 4               | [24]                   |
-| 1     | 1 \* 3 \* 4               | [24, 12]               |
-| 2     | 1 \* 2 \* 4               | [24, 12, 8]            |
-| 3     | 1 \* 2 \* 3               | [24, 12, 8, 6]         |
+<style>.table-1 table { text-align: center;  width: 75%;  margin: 0 auto;  }</style>
+
+<div class="ox-hugo-table table-1">
+
+| Index | Calculation | Return         |
+|-------|-------------|----------------|
+| 0     | 2 \* 3 \* 4 | [24]           |
+| 1     | 1 \* 3 \* 4 | [24, 12]       |
+| 2     | 1 \* 2 \* 4 | [24, 12, 8]    |
+| 3     | 1 \* 2 \* 3 | [24, 12, 8, 6] |
+
+</div>
 
 If we could take the product of the entire list, and then divide by the excluded number, that would
 be best.
@@ -39,13 +46,19 @@ But the description **forbids** the use of division.
 
 Let's try another: `[-1, 1, 0, -3, 3]`
 
-| Index |        Calculation        |        Return        |
-|-------|---------------------------|----------------------|
-| 0     | 1 \* 0 \* -3 \* 3         | [0]                  |
-| 1     | -1 \* 0 \* -3 \* 3        | [0, 0]               |
-| 2     | -1 \* 1 \* -3 \* 3        | [0, 0, 9]            |
-| 3     | -1 \* 1 \* 0 \* 3         | [0, 0, 9, 0]         |
-| 4     | -1 \* 1 \* 0 \* -3        | [0, 0, 9, 0, 0]      |
+<style>.table-2 table { text-align: center;  width: 75%;  margin: 0 auto;  }</style>
+
+<div class="ox-hugo-table table-2">
+
+| Index | Calculation        | Return          |
+|-------|--------------------|-----------------|
+| 0     | 1 \* 0 \* -3 \* 3  | [0]             |
+| 1     | -1 \* 0 \* -3 \* 3 | [0, 0]          |
+| 2     | -1 \* 1 \* -3 \* 3 | [0, 0, 9]       |
+| 3     | -1 \* 1 \* 0 \* 3  | [0, 0, 9, 0]    |
+| 4     | -1 \* 1 \* 0 \* -3 | [0, 0, 9, 0, 0] |
+
+</div>
 
 That last is an interesting one. If there's a zero in the list, everything will be zero
 except where the zero is excluded.
@@ -54,42 +67,46 @@ So, maybe this is a left and right problem. Calculate the product for all number
 to but not including the `ith`. Then calculate the product for all numbers from (but not including)
 the `ith` to the end. Finally, calculate the produce of the right and left.
 
-| Index |        Left        |        Right        |        Calculation        |        Return        |
-|-------|--------------------|---------------------|---------------------------|----------------------|
-| 0     | 1 (Default)        | 1 \* 0 \* -3 \* 3   | 1 \* 0                    | [0]                  |
-| 1     | -1                 | 0 \* -3 \* 3        | -1 \* 0                   | [0, 0]               |
-| 2     | -1 \* 1            | -3 \* 3             | -1 \* -9                  | [0, 0, -9]           |
-| 3     | -1 \* 1 \* 0       | 3                   | 0 \* 3                    | [0, 0, -9, 0]        |
-| 4     | -1 \* 1 \* 0 \* -3 | 1 (Default)         | 0 \* 1                    | [0, 0, -9, 0, 0]     |
+<style>.table-3 table { text-align: center;  width: 100%;  margin: 0 auto;  }</style>
+
+<div class="ox-hugo-table table-3">
+
+| Index | Left               | Right             | Calculation | Return           |
+|-------|--------------------|-------------------|-------------|------------------|
+| 0     | 1 (Default)        | 1 \* 0 \* -3 \* 3 | 1 \* 0      | [0]              |
+| 1     | -1                 | 0 \* -3 \* 3      | -1 \* 0     | [0, 0]           |
+| 2     | -1 \* 1            | -3 \* 3           | -1 \* -9    | [0, 0, -9]       |
+| 3     | -1 \* 1 \* 0       | 3                 | 0 \* 3      | [0, 0, -9, 0]    |
+| 4     | -1 \* 1 \* 0 \* -3 | 1 (Default)       | 0 \* 1      | [0, 0, -9, 0, 0] |
+
+</div>
 
 Let's try `[1, 2, 3, 4, 5]`
 
-| Index |        Left        |        Right        |        Calculation        |        Return         |
-|-------|--------------------|---------------------|---------------------------|-----------------------|
-| 0     | 1 (Default)        | 2 \* 3 \* 4 \* 5    | 1 \* 120                  | [120]                 |
-| 1     | 1                  | 3 \* 4 \* 5         | 1 \* 60                   | [120, 60]             |
-| 2     | 1 \* 2             | 4 \* 5              | 2 \* 20                   | [120, 60, 40]         |
-| 3     | 1 \* 2 \* 3        | 5                   | 6 \* 5                    | [120, 60, 40, 30]     |
-| 4     | 1 \* 2 \* 3 \* 4   | 1 (Default)         | 24 \* 1                   | [120, 60, 40, 30, 24] |
+<style>.table-4 table { text-align: center;  width: 100%;  margin: 0 auto;  }</style>
 
-But try as you might, there's no way to avoid O(n<sup>2</sup>).
+<div class="ox-hugo-table table-4">
+
+| Index | Left             | Right            | Calculation | Return                |
+|-------|------------------|------------------|-------------|-----------------------|
+| 0     | 1 (Default)      | 2 \* 3 \* 4 \* 5 | 1 \* 120    | [120]                 |
+| 1     | 1                | 3 \* 4 \* 5      | 1 \* 60     | [120, 60]             |
+| 2     | 1 \* 2           | 4 \* 5           | 2 \* 20     | [120, 60, 40]         |
+| 3     | 1 \* 2 \* 3      | 5                | 6 \* 5      | [120, 60, 40, 30]     |
+| 4     | 1 \* 2 \* 3 \* 4 | 1 (Default)      | 24 \* 1     | [120, 60, 40, 30, 24] |
+
+</div>
+
+But try as you might, there's no way to avoid O(n^2).
 
 The no-division requirement is artificial. Is there some way around that?
 
-There is the identity: `a/b  = a * (b^-1)`
+There is the identity: \\( a/b = a \* b^{-1} \\)
 
-So, first calculate the total and then for each `i`, push onto a list `total * (v[i]^-1)`. There will be
+So, first calculate the total and then for each `i`, push onto a list \\( total \* v[i]^{-1} \\) There will be
 the case of having a zero. But that won't be hard to catch.
 
-What's the take away from this? I'm not really sure. I can only liken it to solving chess
-problems. What's the point of chess problems? First, it trains you to think in a
-chess-problem-solving way. Second, it gives you patterns to remember and hopefully apply in other
-situations. For example, once you know Anastasia's mate, seeing it, even many moves away, is pretty
-easy, and if your opponent is not aware of the pattern, you have a distinct advantage.
-
-Actually, I'm not even sure that this programming challenge rises to the level of a chess problem.
-
-{{< highlight C >}}
+```C
 #include <vector>
 #include <cmath>
 #include <gtest/gtest.h>
@@ -102,16 +119,16 @@ public:
     int zerosFound = 0;
     for(std::size_t i = 0; i < nums.size(); i++) {
       if (nums[i] == 0){
-        zerosFound++;
+	zerosFound++;
       } else {
-        total *= nums[i];
+	total *= nums[i];
       }
     }
     // we expect only one zero, but it's not in the constraints, so if
     // more than one zero, everything is zero
     if (zerosFound > 1) {
       for(std::size_t i=0; i<nums.size(); i++) {
-        nums[i] = 0;
+	nums[i] = 0;
       }
       return nums;
     }
@@ -119,13 +136,13 @@ public:
     for(std::size_t i=0; i<nums.size(); i++) {
       if (nums[i] == 0) {
         // found a zero
-        nums[i] = total;
+	nums[i] = total;
       }else{
-        if (zerosFound == 1){
-          nums[i] = 0;
-        }else{
-          nums[i] = total * pow(nums[i], -1);
-        }
+	if (zerosFound == 1){
+	  nums[i] = 0;
+	}else{
+	  nums[i] = total * pow(nums[i], -1);
+	}
       }
     }
     return nums;
@@ -163,26 +180,26 @@ int main(int argc, char **argv) {
   testing::InitGoogleTest(&argc, argv);
   return RUN_ALL_TESTS();
 }
-{{< /highlight >}}
+```
 
 I have a simple Makefile:
 
-{{< highlight makefile >}}
+```makefile
 OBJS = productExceptSelf.o
 
 productExceptSelf: $(OBJS)
-        g++ -Wall -g -o productExceptSelf $(OBJS) -lgtest -lgtest_main
+	g++ -Wall -g -o productExceptSelf $(OBJS) -lgtest -lgtest_main
 
 productExceptSelf.o: productExceptSelf.cpp
-        g++ -Wall -g -c productExceptSelf.cpp
+	g++ -Wall -g -c productExceptSelf.cpp
 
 clean:
-        rm productExceptSelf $(OBJS)
-{{< /highlight >}}
+	rm productExceptSelf $(OBJS)
+```
 
 And here are my google test results:
 
-{{< highlight bash >}}
+```bash
 [==========] Running 2 tests from 1 test suite.
 [----------] Global test environment set-up.
 [----------] 2 tests from ProductExceptSelf
@@ -195,7 +212,7 @@ And here are my google test results:
 [----------] Global test environment tear-down
 [==========] 2 tests from 1 test suite ran. (0 ms total)
 [  PASSED  ] 2 tests.
-{{< /highlight >}}
+```
 
 Runtime?
 
