@@ -4,6 +4,7 @@ author: ["Karl Stump"]
 date: 2024-11-26
 tags: ["CPP", "Leetcode"]
 draft: false
+math: true
 ---
 
 Okay, this is the tenth question from the "Top Interview 150."
@@ -29,11 +30,17 @@ been cited at least h times.
 
 So, given: citations list of `[3, 0, 6, 1, 5]` we can sort this like this: `[6, 5, 3, 1, 0]`
 
+<style>.table table { text-align: center;  width: 80%;  margin: 0 auto;  }</style>
+
+<div class="ox-hugo-table table">
+
 |           |   |   |   |   |   |
 |-----------|---|---|---|---|---|
 | Citations | 6 | 5 | 3 | 1 | 0 |
 | Index     | 1 | 2 | 3 | 4 | 5 |
 | H-index   | 1 | 2 | 3 | 1 | 0 |
+
+</div>
 
 How do we calculate the h-index?
 
@@ -52,11 +59,17 @@ Let's try another.
 
 So, given: citations list of `[1, 3, 1]` we can sort this like this: `[3, 1, 1]`
 
+<style>.table table { text-align: center;  width: 80%;  margin: 0 auto;  }</style>
+
+<div class="ox-hugo-table table">
+
 |           |   |   |   |
 |-----------|---|---|---|
 | Citations | 3 | 1 | 1 |
 | Index     | 1 | 2 | 3 |
 | H-index   | 1 | 1 | 1 |
+
+</div>
 
 At index 1, we have 3 citations, so, h-index 1 (1 is less than 3). At index 2 we have 2 papers with at least 1
 citation, so h-index of 1. At index 3 we have 3 papers with at least 1 citation, and an h-index
@@ -65,11 +78,17 @@ cases, the index is greater than the citation, so take the citation number.
 
 But what about this case? Given six papers: `[6, 5, 4, 4, 4, 3]`
 
+<style>.table table { text-align: center;  width: 80%;  margin: 0 auto;  }</style>
+
+<div class="ox-hugo-table table">
+
 |           |   |   |   |   |   |   |
 |-----------|---|---|---|---|---|---|
 | Citations | 6 | 5 | 4 | 4 | 4 | 3 |
 | Index     | 1 | 2 | 3 | 4 | 5 | 6 |
 | H-index   | 1 | 2 | 3 | 4 | 4 | 3 |
+
+</div>
 
 Here the h-index tracks the index number until index 4. When we get to index 5, since 5 is less than
 4 we take citation count. And the same is true for index 6. 6 is less than 3, take the citation
@@ -79,15 +98,25 @@ Now what about this:
 
 But what about this case? Given four papers: `[6, 5, 4, 0]`
 
+<style>.table table { text-align: center;  width: 80%;  margin: 0 auto;  }</style>
+
+<div class="ox-hugo-table table">
+
 |           |   |   |   |   |
 |-----------|---|---|---|---|
 | Citations | 6 | 5 | 4 | 0 |
 | Index     | 1 | 2 | 3 | 4 |
 | H-index   | 1 | 2 | 3 | 0 |
 
-This is the same as the previous case.
+</div>
+
+So, the h-index is 3.
 
 Maybe more interesting would be this:
+
+<style>.table table { text-align: center;  width: 80%;  margin: 0 auto;  }</style>
+
+<div class="ox-hugo-table table">
 
 |           |   |   |   |   |
 |-----------|---|---|---|---|
@@ -95,9 +124,15 @@ Maybe more interesting would be this:
 | Index     | 1 | 2 | 3 | 4 |
 | H-index   | 1 | 2 | 3 | 4 |
 
+</div>
+
 Where in the last element, we're actually taking the citation number.
 
 Finally, another without comment.
+
+<style>.table table { text-align: center;  width: 80%;  margin: 0 auto;  }</style>
+
+<div class="ox-hugo-table table">
 
 |           |   |   |   |   |   |   |   |   |
 |-----------|---|---|---|---|---|---|---|---|
@@ -105,10 +140,12 @@ Finally, another without comment.
 | Index     | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 |
 | H-index   | 1 | 2 | 3 | 4 | 4 | 3 | 3 | 3 |
 
+</div>
+
 So, the basic idea is to sort the list of nums, and then iterate over the list, saving the highest
 h-number. And whenever the h-number is less than we can return.
 
-{{< highlight C >}}
+```C
 #include <algorithm>
 #include <vector>
 #include <gtest/gtest.h>
@@ -126,9 +163,9 @@ public:
         hIndex = citations[i];
 
       if (hIndex <= maxHIndex)
-        return maxHIndex;
+	return maxHIndex;
       else
-        maxHIndex = hIndex;
+	maxHIndex = hIndex;
     }
 
     return maxHIndex;
@@ -216,26 +253,26 @@ int main(int argc, char **argv) {
   testing::InitGoogleTest(&argc, argv);
   return RUN_ALL_TESTS();
 }
-{{< /highlight >}}
+```
 
 I have a simple Makefile:
 
-{{< highlight makefile >}}
+```makefile
 OBJS = hIndex.o
 
 hIndex: $(OBJS)
-        g++ -Wall -g -o hIndex $(OBJS) -lgtest -lgtest_main
+	g++ -Wall -g -o hIndex $(OBJS) -lgtest -lgtest_main
 
 hIndex.o: hIndex.cpp
-        g++ -Wall -g -c hIndex.cpp
+	g++ -Wall -g -c hIndex.cpp
 
 clean:
-        rm hIndex $(OBJS)
-{{< /highlight >}}
+	rm hIndex $(OBJS)
+```
 
 And here are my google test results:
 
-{{< highlight bash >}}
+```bash
 [==========] Running 6 tests from 1 test suite.
 [----------] Global test environment set-up.
 [----------] 6 tests from hIndex
@@ -256,7 +293,7 @@ And here are my google test results:
 [----------] Global test environment tear-down
 [==========] 6 tests from 1 test suite ran. (0 ms total)
 [  PASSED  ] 6 tests.
-{{< /highlight >}}
+```
 
 {{< figure src="/ox-hugo/complexity-hindex.png" >}}
 
