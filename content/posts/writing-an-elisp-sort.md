@@ -255,7 +255,7 @@ General text sorting routine to divide buffer into records and sort them.
 
 That opening is already promising: “divide buffer into records and sort them.”
 
-Clicking through to the source (in my case, `~/.local/share/emacs/31.0.50/lisp/sort.el`) reveals how it works, but the docstring alone gives a decent mental model[^fn:1].
+Clicking through to the source (in my case, `~/.local/share/emacs/31.0.50/lisp/sort.el`) reveals how it works, but the docstring alone gives a decent mental model.[^fn:1]
 
 We define:
 
@@ -382,7 +382,7 @@ A few details worth noting:
 -   In that case, `sort-subr` passes each key to the predicate as a cons cell: `(BEG . END)`.
 -   Our PREDICATE just computes the length `END - BEG` and compares lengths.
 
-This works nicely for a list of names. But our original goal was to sort **cells** in an Org table, left-to-right, top-to-bottom.
+This works nicely for a list of names.[^fn:2] But our original goal was to sort **cells** in an Org table, left-to-right, top-to-bottom.
 
 Time to get a bit fancier.
 
@@ -540,3 +540,4 @@ The pattern is useful beyond this example:
 -   And when the problem sits at the intersection — like sorting structured text inside your editor — it’s nice to know what tools Emacs has waiting under the hood.
 
 [^fn:1]: In sort.el is found the function sort-lines which sorts alphabetically. Instrumenting and stepping through it with the debugger is another excellent path forward.
+[^fn:2]: An improvement would be to have STARTKEFUN simply compute the length and return it. In that case, ENDKEYFUN and PREDICATE can be nil. We will see this in the next version, along with other changes.
