@@ -525,9 +525,9 @@ This really good. But let's change the requirements.
 
 Suppose now we want the ability to sort top-to-bottom and then right-to-left.
 
-This could exposes a bit of a problem. It all gets down to how the table is represented. The regex-walker naturally searches left-to-right column first, then moves down a row, and continues searching. This is fine, since that was the given requirement.
+This exposes a bit of a problem. The regex-walker naturally searches from left-to-right (column first), then moves down a row, and continues searching. This is fine, since that was the given requirement.
 
-Moving top-to-bottom (row first) and left-to-right is more of a challenge. However, there is a function `org-table-transpose-table-at-point`.
+Moving top-to-bottom (row first) and then left-to-right is more of a challenge. However, there is a function `org-table-transpose-table-at-point`.
 
 Applying this transposition function to this table:
 
@@ -546,7 +546,7 @@ Results in this:
 | 5 | d | h |
 ```
 
-We can use this function to transpose the table of names, then sort, then transpose back. Here's the updated code.
+That's exactly what we want. We can use this function to transpose the table of names, then sort, then transpose back. Here's the updated code.
 
 ```emacs-lisp
   (defun kes/sort-org-table-by-field-length (arg)
