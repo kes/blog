@@ -255,7 +255,7 @@ General text sorting routine to divide buffer into records and sort them.
 
 That opening is already promising: “divide buffer into records and sort them.”
 
-Clicking through to the source (in my case, `~/.local/share/emacs/31.0.50/lisp/sort.el`) reveals how it works, but the docstring alone gives a decent mental model.
+Clicking through to the source (in my case, `~/.local/share/emacs/31.0.50/lisp/sort.el`) reveals how it works, but the docstring alone gives a decent mental model[^fn:1].
 
 We define:
 
@@ -538,3 +538,5 @@ The pattern is useful beyond this example:
 -   Let Unix do what Unix is good at.
 -   Let Emacs do what Emacs is good at.
 -   And when the problem sits at the intersection — like sorting structured text inside your editor — it’s nice to know what tools Emacs has waiting under the hood.
+
+[^fn:1]: In sort.el is found the function sort-lines which sorts alphabetically. Instrumenting and stepping through it with the debugger is another excellent path forward.
