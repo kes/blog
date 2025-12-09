@@ -210,12 +210,11 @@ Given a string and the number of rows, we build strings. The vector is just a li
 (define (zigzag-convert-numeric s num-rows)
     (let ((n (string-length s)))
       (if (or (<= num-rows 1)
-              (<= n num-rows))          ; trivial: no zigzag needed
+              (<= n num-rows))
           s
-          (let ((rows (make-vector num-rows ""))) ; vector of row-strings
-            (let loop ((i 0))            ; index in s
+          (let ((rows (make-vector num-rows "")))
+            (let loop ((i 0))
               (if (= i n)
-                  ;; done: glue all row strings together
                   (join-strings (vector->list rows))
                   (let* ((ch       (string-ref s i))
                          (k (index->row i num-rows))
