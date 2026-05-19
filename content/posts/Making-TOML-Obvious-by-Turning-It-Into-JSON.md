@@ -68,7 +68,7 @@ This is good enough:
                '(toml "https://github.com/tree-sitter/tree-sitter-toml")))
 ```
 
-Now, I didn't want to do much. Just see some `JSON` equivalence for a bit of `TOML`. Even the TOML documention does that. For example at, [array of tables](https://toml.io/en/v1.1.0#array-of-tables) we read:
+Now, I didn't want to do much. Just see some JSON equivalence for a bit of TOML. Even the TOML documention does that. For example in the official documentation, discussing an [array of tables](https://toml.io/en/v1.1.0#array-of-tables) we read:
 
 > The last syntax that has not yet been described allows writing arrays of tables. These can be expressed by using a header with a name in double brackets. The first instance of that header defines the array and its first table element, and each subsequent instance creates and defines a new table element in that array. The tables are inserted into the array in the order encountered.
 
@@ -104,7 +104,7 @@ And from the same documentation we learn:
 
 > Any reference to an array of tables points to the most recently defined table element of the array. This allows you to define sub-tables, and even sub-arrays of tables, inside the most recent table.
 
-So, we are shown this:
+And, we are shown this:
 
 ```TOML
 [[fruits]]
@@ -127,7 +127,7 @@ name = "banana"
 name = "plantain"
 ```
 
-And it's explained using JSON:
+But it's explained using JSON:
 
 ```json
 {
@@ -148,22 +148,24 @@ And it's explained using JSON:
 }
 ```
 
-So, if the documentation does it, why can't I? Perfectly reasonable, then, to want to translate TOML into JSON
+So, if the documentation uses JSON clarity to show TOML meaning, then why can't I? Perfectly reasonable, then, to want to translate TOML into JSON
 
 Back to `tomlparse.el`. It provides `tomlparse-string`. The docstring reveals:
 
-> Signature
-> (tomlparse-string STRING &amp;rest ARGS)
->
-> Documentation
->
-> Return a hash table with the contents of the toml data STRING.
+```text
+Signature
+(tomlparse-string STRING &rest ARGS)
 
-Of course, the source code is exposed if we really want to investigate:
+Documentation
+
+Return a hash table with the contents of the toml data STRING.
+```
+
+Of course, the source code is exposed if we want to investigate:
 
 {{< figure src="/ox-hugo/tomlparse-string-source.png" width="1000px" >}}
 
-That's great. We pass a TOML string and we get back a hash object. But now that needs to be converted it to JSON --- for that `json-serialize` is the answer.
+That's great. We pass in a TOML string and we get back a hash object. But now that needs to be converted it to JSON --- for that `json-serialize` is the answer.
 
 {{< figure src="/ox-hugo/json-serialize.png" width="1000px" >}}
 
@@ -218,13 +220,13 @@ So, the little bit of Lisp I'm thinking about looks something like this:
 
 It's simple.
 
-Get the TOML in the kill buffer, and call `kes/toml2json`, which only has to make only two calls:
+Get the TOML in the kill buffer, then call `kes/toml2json`, which itself only has to make two calls:
 
 tomlparse-string
-: this returns an object based on the TOML string we send it, and that TOML string comes from the kill-buffer.
+: this returns a hash object based on the TOML string
 
 json-serialize
-: this returns a string of JSON based on the object pass it.
+: this returns a string of JSON
 
 The only problem is we want our JSON to look pretty.
 
@@ -234,7 +236,7 @@ There is a shell utility --- `jq` --- that does that, and lots more.
 
 It would be a shame not to use it.
 
-So, we just make a call to the shell from Lisp using `shell-command-to-string` --- looking at the docstring, it warns to use only when a shell is needed, and to prefer an alternative like, `call-process` and friends --- this is basic security --- however, in this case, I'm not worried --- we know how to play nice --- the docstring helpfully warns us to use `shell-quote-argument` "to quote dangerous characters" --- and we think that's a good idea too!
+So, we just make a call to the shell from Lisp using `shell-command-to-string` --- looking at the docstring, it warns us to prefer alternatives, like `call-process` and friends --- this is basic security --- however, in this case, I'm not worried --- the docstring helpfully warns us to use `shell-quote-argument` "to quote dangerous characters" --- and I think that's a good idea too!
 
 So, boldly,
 
@@ -253,15 +255,9 @@ So, boldly,
 
 And it works!
 
-Putting the TOML into the kill-buffer --- `Ctrl-c` for many, in Emacs it's
+Putting the TOML into the kill-ring --- `Ctrl-c` for many, in Emacs it's `kill-ring-save` which is bound to `M-w`.
 
-M-w
-: `kill-ring-save`
-
-C-w
-: `kill-region`
-
-Then, invoking the function `M-x kes/toml2json` and then paste, `C-y` (aka `yank`) --- and you've got the `JSON` in the buffer. Cool!
+Then, invoking the function `M-x kes/toml2json`, and then paste, and you've got the JSON in the buffer. Cool!
 
 This works because `shell-quote-argument` keeps the serialized JSON as one safe shell argument. Still, `echo` is not ideal for arbitrary data.
 
@@ -292,24 +288,27 @@ Like this:
     (message "✅ TOML → JSON converted and copied to clipboard!")))
 ```
 
-Slightly more advanced, but only very slightly. (But Emacs Lisp idiom? This is gold. Read on!)
+Slightly more advanced, but only very slightly. (But the Emacs Lisp idiom? This is gold. Read on!)
 
-Using the wrapper `with-temp-buffer` and inserting the JSON content opens up a lot of flexibility and plays to strength of buffers in Emacs.
+Now, using the wrapper `with-temp-buffer` and inserting the JSON, opens up a lot of flexibility and plays to strength of buffers in Emacs.
 
-It's a fundamental technique in Emacs Lisp programming.
+It's a fundamental technique in Emacs Lisp programming:
 
-Get the data you want to work on, then use a `with-temp-buffer` wrapper, insert the data into the buffer, and then process it to your needs. When finished, just collect the temp-buffer contents, and be on your way.
+1.  Get the data you want to work on
+2.  Then using a `with-temp-buffer` wrapper, insert the data into the buffer
+3.  Now, process to your needs
+4.  When finished, just collect the temp-buffer contents, and be on your way
 
 This is the part worth remembering even if you never convert TOML to JSON.
 
-Now, using `with-temp-buffer`, we also use a `call-process` command. We have eliminated `shell-quote-argument`, too.
+We also use `call-process-region` and eliminated `shell-quote-argument`, too.
 
 Wins all around.[^fn:8]
 
 
 ## Demo {#demo}
 
-Here's the buffer --- I've copied (killed) the buffer text and it's in the clipboard. At the bottom you can see that I'm calling `kes/toml2json`.
+Here's the buffer --- I've copied the buffer text and it's in the clipboard. At the bottom you can see that I'm calling `kes/toml2json`.
 
 {{< figure src="/ox-hugo/demo-1.png" width="1000px" >}}
 
