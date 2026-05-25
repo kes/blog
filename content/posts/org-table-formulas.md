@@ -839,55 +839,68 @@ Once you understand targets, current fields, relative references, and ranges, th
 
 ## Addendum {#addendum}
 
-To whet your appetite for just a bit more, here is a slightly richer example:
+In order to whet your appetite for more, here's a table that's a bit more rich:
 
 ```text
-|       |     T1 |    T2 |     T3 | Max |
-|-------+--------+-------+--------+-----|
-| A     |    990 |    20 |    500 | 990 |
-| B     |    200 |    40 |    600 | 600 |
-| C     |    101 |     3 |    501 | 501 |
-| D     |     12 |     5 |    605 | 605 |
-|-------+--------+-------+--------+-----|
-| Total |   1303 |    68 |   2206 |     |
-| Mean  | 325.75 | 17.00 | 551.50 |     |
-#+TBLFM: @6$2..@6$4=vsum(@I..@II)::@7$2..@7$4=vmean(@I..@II);%.2f::$5=if(@# < 6, vmax($2..$4), string(""))
+|       |    T1 |   T2 |    T3 | Total |  Mean | Max |
+|-------+-------+------+-------+-------+-------+-----|
+| A     |   990 |   20 |   500 |  1510 | 503.3 | 990 |
+| B     |   201 |   40 |   600 |   841 | 280.3 | 600 |
+| C     |   101 |    3 |   501 |   605 | 201.7 | 501 |
+| D     |    12 |    5 |   605 |   622 | 207.3 | 605 |
+|-------+-------+------+-------+-------+-------+-----|
+| Total |  1304 |   68 |  2206 |       |       |     |
+| Mean  | 326.0 | 17.0 | 551.5 |       |       |     |
+| Max   |   990 |   40 |   605 |       |       |     |
+#+TBLFM: $5=if(@# < 6, vsum($2..$4), string(""))::$6=if(@# < 6, vmean($2..$4), string(""));f1::$7=if(@# < 6, vmax($2..$4), string(""))::@6$2..@6$4=vsum(@I..@II)::@7$2..@7$4=vmean(@I..@II);%.1f::@8$2..@8$4=vmax(@I..@II)
 ```
 
-The first formula calculates totals:
+The row formulas are:
+
+```text
+$5=if(@# < 6, vsum($2..$4), string(""))
+$6=if(@# < 6, vmean($2..$4), string(""));f1
+$7=if(@# < 6, vmax($2..$4), string(""))
+```
+
+These fill in the Total, Mean, and Max columns for the data rows only.
+
+There is something new here that we have not covered. The test `@# < 6` means "only do this for rows before row 6." For the summary rows, the formula returns an empty string.
+
+Notice the formatting on the mean formula:
+
+```text
+;f1
+```
+
+This displays the mean with one digit after the decimal point while still allowing the empty-string result to remain blank.
+
+<div class="pro-tip">
+
+**Pro Tip:** Org table formulas support different formatting styles. A printf-style format like `;%.1f` works well for ordinary numeric results, but in a conditional formula that sometimes returns an empty string, Calc-style formatting such as `;f1` may preserve the blank cell better.
+
+-   ;%.1f  → stricter numeric formatting, may turn blank into 0.0
+-   ;f1    → fixed-point display with one decimal, but friendlier to blank strings
+
+</div>
+
+The summary formulas are:
 
 ```text
 @6$2..@6$4=vsum(@I..@II)
+@7$2..@7$4=vmean(@I..@II);%.1f
+@8$2..@8$4=vmax(@I..@II)
 ```
 
-It says: for row 6, columns 2 through 4, sum the values between the first and second hlines in the current column.
+These calculate totals, means, and maximums for each test column.
 
-The second formula calculates means:
+When formulas begin to get long and complex, the formula editor becomes necessary:
 
-```text
-@7$2..@7$4=vmean(@I..@II);%.2f
-```
+{{< figure src="/ox-hugo/6formula.png" width="500px" >}}
 
-It does the same kind of range calculation, but uses `vmean` instead of `vsum`, and formats the result with two decimal places.
+Notice that it helpfully divides the formulas according to type, "column formulas" and "field and range formulas." (Not shown, but as you move your cursor on the formula, Emacs will also highlight the fields in the main buffer.)
 
-The third formula calculates the maximum value in each data row:
-
-```text
-$5=if(@# < 6, vmax($2..$4), string(""))
-```
-
-This is a column formula for column 5. For each row, it checks the current row number with `@#`. If the row number is less than 6, it calculates the maximum of columns 2 through 4. Otherwise, it returns an empty string.
-
-In plain English:
-
-```text
-For each data row, put the maximum of T1, T2, and T3 in the Max column.
-For the Total and Mean rows, leave the Max column blank.
-```
-
-There is more going on here, but the same basic ideas are still in play: targets, current fields, ranges, functions, and formatting.
-
-Don’t worry if every part of this formula is not obvious yet. The point is to see that the same building blocks can be combined into more useful table formulas.
+You do not need to absorb every detail of this formula at once. The point is that the same basic pieces --- targets, ranges, relative references, and functions --- can be combined into useful tables.
 
 [^fn:1]: 'c-h v' and then enter the variable name.
 [^fn:2]: I'm tempted to use "formulae," but no. Well...? No.
