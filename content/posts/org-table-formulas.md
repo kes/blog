@@ -21,12 +21,16 @@ So let's get going.
 
 Org Mode can treat tables like spreadsheets. That's pretty amazing, but there are some key differences between traditional spreadsheets and Org-Mode tables used as spreadsheets.
 
+<div class="ox-hugo-table my-table-1">
+
 | Traditional Spreadsheets (Excel)                 | Org-Mode Tables                                             |
 |--------------------------------------------------|-------------------------------------------------------------|
 | Data and logic are mixed.                        | Data and logic are separated.                               |
 | A cell contains either raw data or a formula.    | Cells only contain raw data or calculated outputs.          |
 | You must click a cell to see the hidden formula. | All logic is completely visible at the bottom of the table. |
 | Formulas are stored per cell.                    | Formulas are stored as global rules for columns or rows.    |
+
+</div>
 
 In Org, formulas for how to calculate the value of a cell are specified in a `#+TBLFM:` line beneath the table. The formulas can never be written directly inside the table cells. They must always live in the `#+TBLFM:` line just below the table.
 
@@ -93,7 +97,11 @@ So, an absolute cell reference looks like this: `@row$column`
 
 Example: to reference row three and column two you would write:  `@3$2`
 
-**Pro Tip:** To find out the reference for any cell in a table, by putting your cursor in the cell and pressing `C-c ?`.
+<div class="pro-tip">
+
+**Pro Tip:** To find the reference for any cell in an Org table, put your cursor in the cell and press `C-c ?`.
+
+</div>
 
 Here is a table. You can see how the absolute references are working. There are exactly nine formulas[^fn:2] separated by `::`.
 
@@ -165,15 +173,21 @@ And positioning our cursor on the `#+TBLFM` line and pressing `C-c C-c` we get:
 #+TBLFM: $1=99
 ```
 
-How did every row of column one get set to 99?
+How did every row of the first column get set to 99?
 
 Simple, we used an absolute column reference in the formula.
 
-Let's state the meaning of the formula in words: "For every applicable row in the table, set column 1 to the value 99 for the current row (i.e., the row that's being processed.)"
+Let's state the meaning of the formula in words: "For every applicable row in the table, set column 1 to the value 99."
 
 That's it!
 
 Now, about that word, "applicable?" Here is another example demonstrating that the header (row 1) and the hline (not a row) are automatically skipped --- they are not applicable.
+
+<div class="pro-tip">
+
+To verify that the header is row 1, and the hline is not its own row, put your cursor on each, and press `C-c ?`.
+
+</div>
 
 Consider this table.
 
@@ -187,7 +201,7 @@ Consider this table.
 #+TBLFM: $1=101;
 ```
 
-Here, when we run the calculations, we will expect the first column to get overwritten, but will the header (row 1) in column 1 get overwritten?
+Here, when we run the calculations, we expect the first column will get overwritten. But will the header (row 1) in column 1 get overwritten?
 
 Let's try it.
 
@@ -304,12 +318,16 @@ A few more notes:
 
 3.  Here's a list that includes absolute column, row, and cell references:
 
+    <div class="ox-hugo-table my-table-1">
+
     | Formula              | Plain English                                         |
     |----------------------|-------------------------------------------------------|
     | \\$3=\\$1+\\$2       | For each row, col 3 = col 1 + col 2.                  |
     | @3=@1+@2             | For each column, row 3 = row 1 + row 2.               |
     | @2\\$3=\\$1+\\$2     | In row 2 only, col 3 = col 1 + col 2.                 |
     | @3\\$2=@1\\$2+@2\\$2 | In cell row 3 col 2, add row 1 col 2 and row 2 col 2. |
+
+    </div>
 
 In order to master Org formulas, it is essential to master absolute column and row references.
 
@@ -322,7 +340,11 @@ We've already seen that column references can be absolute, like, `$1`, now, we i
 
 So, if we wanted to references one column to the left of the column of the table being computed, we could write: `$-1`. An example will help.
 
-> **Note:** In the table below notice the **header line** ( `|A | B | C | D |`) and the **hline** (`|-----+-----+-----+-----|`). Org knows to skip the header and the hline. However, if we put our cursor in the headline and press `C-c ?` we will see that the header is row one. And if we did the same for the first data line, we would see that it is row two.
+<div class="pro-tip">
+
+**Note:** In the table below notice the **header line** ( `|A | B | C | D |`) and the **hline** (`|-----+-----+-----+-----|`). Org knows to skip the header and the hline. However, if we put our cursor in the headline and press `C-c ?` we will see that the header is row one. And if we did the same for the first data line, we would see that it is row two.
+
+</div>
 
 In the following table we have not yet run the calculations. What is going on here? What will happen?
 
@@ -398,6 +420,7 @@ The row references are relative to the row of the field which is being computed.
 | C | 101 | 301 | 501 |
 | D | 205 | 405 | 605 |
 |---+-----+-----+-----|
+|   |     |     |     |
 #+TBLFM: @5=@-4 + @-3 +@-2 + @-1
 ```
 
