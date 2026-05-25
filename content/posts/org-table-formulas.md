@@ -134,7 +134,11 @@ Or in the formula editor:
 
 Notice that we have added a `;%.2f` to the end of the second and third formulas to nicely format our output.
 
+<div class="pro-tip">
+
 **Please note:** the above formulas are very verbose for pedagogical purposes: to demonstrate absolute cell references. There are much more concise ways of expressing these formulas.
+
+</div>
 
 We now move to absolute column references.
 
