@@ -45,7 +45,7 @@ And then we just go to the source file we want to see.
 
 The entire function (unmodified) is about 40 lines long.
 
-```c { linenos=true, linenostart=1 }
+```c { class="my-code-wrapper", linenos=true, linenostart=1 }
 /* Return the default PATH if it can be determined, NULL otherwise.  */
 
 static char const *
@@ -93,7 +93,7 @@ default_PATH (void)
 
 The code is interesting. If we look just at the top \\(\ldots\\)
 
-```c { linenos=true, linenostart=1 }
+```c { class="my-code-wrapper", linenos=true, linenostart=1 }
  /* Return the default PATH if it can be determined, NULL otherwise.  */
 
  static char const *
@@ -122,7 +122,7 @@ There's also the `static char staticbuff[16]` those 16 bytes are allocated at co
 
 The first time this function is called the expression `!staticbuf[0]` will be true. Let's see what happens in the body of the code. (I've removed the C preprocessor directive.)
 
-```c { linenos=true, linenostart=1 }
+```c { class="my-code-wrapper", linenos=true, linenostart=1 }
 if (!staticbuf[0])
   {
     char *buf = staticbuf;
@@ -152,7 +152,7 @@ The expression `(s = confstr (_CS_PATH, buf, bufsize))` sets the value of `s` to
 
 So, logically we have:
 
-```c
+```c { class="my-code-wrapper", linenos=true, linenostart=1 }
 s = confstr (_CS_PATH, buf, bufsize);
 while (bufsize < s){
   /* must need a larger buffer! */
@@ -203,22 +203,25 @@ Let's test it.
 
 I wrote the following, a simple call to confstr and printing the results.
 
-```c { linenos=true, linenostart=1 }
+```C { class="my-code-wrapper", linenos=true, linenostart=1 }
 #include <stdio.h>
 #include <unistd.h>
-void main (){
+
+int main() {
   static char buffer[16];
   size_t buffsize = sizeof buffer;
   size_t n;
 
-  n = confstr(_CS_PATH, buffer, (size_t) buffsize);
+  n = confstr(_CS_PATH, buffer, buffsize);
 
-  printf("buffsize = %ld\nbuffer = %s\n", buffsize, buffer);
-  printf("confstr returned: n=%ld\n", n);
+  printf("buffsize = %zu\nbuffer = %s\n", buffsize, buffer);
+  printf("confstr returned: n=%zu\n", n);
   if (buffsize < n)
     printf("uh-oh!! --- buffer too small!\n");
   else
     printf("Yea!! Buffer big enough!\n");
+
+  return 0;
 }
 ```
 
@@ -226,11 +229,53 @@ Nothing complicated here. But I was curious. I really didn't know if 16 bytes wo
 
 So, running.
 
-{{< figure src="/ox-hugo/confstr-test-1.png" width="700px" >}}
+<div class="my-code-results-wrapper">
+
+```text
+buffsize = 16
+buffer = /bin:/usr/bin
+confstr returned: n=14
+Yea!! Buffer big enough!
+```
+</div>
 
 Okay, 16 bytes is big enough. Let's make the buffer too small.
 
-{{< figure src="/ox-hugo/confstr-test-2.png" width="700px" >}}
+A `buffer[10]` should do the trick.
+
+```C { class="my-code-wrapper", linenos=true, linenostart=1 }
+#include <stdio.h>
+#include <unistd.h>
+
+int main() {
+  static char buffer[10];
+  size_t buffsize = sizeof buffer;
+  size_t n;
+
+  n = confstr(_CS_PATH, buffer, buffsize);
+
+  printf("buffsize = %zu\nbuffer = %s\n", buffsize, buffer);
+  printf("confstr returned: n=%zu\n", n);
+  if (buffsize < n)
+    printf("uh-oh!! --- buffer too small!\n");
+  else
+    printf("Yea!! Buffer big enough!\n");
+
+  return 0;
+}
+```
+
+And then run and the output is:
+
+<div class="my-code-results-wrapper">
+
+```text
+buffsize = 10
+buffer = /bin:/usr
+confstr returned: n=14
+uh-oh!! --- buffer too small!
+```
+</div>
 
 This is very helpful. It demonstrates that `confstr` returns the size needed but also returns what it can an truncates the rest.
 
@@ -238,7 +283,7 @@ But that raises the question, what do you do if the static buffer is too small?
 
 The man page has example code that gets the size needed from confstr, and then allocates the memory. Like this:
 
-```c { linenos=true, linenostart=1 }
+```c { class="my-code-wrapper", linenos=true, linenostart=1 }
 char *pathbuf;
 size_t n;
 
@@ -253,7 +298,7 @@ The man page example doesn't even bother trying a static buffer with a predefine
 
 Let's try it.
 
-```c { linenos=true, linenostart=1 }
+```C { class="my-code-wrapper", linenos=true, linenostart=1 }
 #include <stdio.h>
 #include <unistd.h>
 #include<stdlib.h>
@@ -279,7 +324,16 @@ void main (){
 }
 ```
 
-{{< figure src="/ox-hugo/confstr-man-code-3.png" width="700px" >}}
+<div class="my-code-results-wrapper">
+
+```text
+buffer size = 14
+buffer = /bin:/usr/bin
+first call confstr returned: n=14
+second call confstr returned: m=14
+Yea!! Buffer big enough!
+```
+</div>
 
 Okay. So, we know what confstr does.
 
@@ -289,7 +343,7 @@ Sure, why not?
 
 Let's try it!
 
-```c { linenos=true, linenostart=1 }
+```C { class="my-code-wrapper", linenos=true, linenostart=1 }
 #include <stdio.h>
 #include <unistd.h>
 #include<stdlib.h>
@@ -317,13 +371,55 @@ void main (){
   }
 ```
 
-And when we set the static buffer to 16:
+<div class="my-code-results-wrapper">
 
-{{< figure src="/ox-hugo/confstr-like-emacs-big-enough.png" width="700px" >}}
+```text
+bufsize = 10 too small!
+Needs to be: 14
+buffer size = 14
+buffer = /bin:/usr/bin
+confstr returned: s=14
+```
+</div>
 
-And when the static buffer is too small:
+And when we declare: `static char staticbuf [16]`.
 
-{{< figure src="/ox-hugo/confstr-like-emacs-too-small.png" width="700px" >}}
+```C { class="my-code-wrapper", linenos=true, linenostart=1 }
+#include <stdio.h>
+#include <unistd.h>
+#include<stdlib.h>
+#include<string.h>
+void main (){
+
+  char *path;
+  static char staticbuf [16];
+  char *buf = staticbuf;
+  size_t bufsize = sizeof staticbuf, s;
+
+  while (bufsize < (s = confstr (_CS_PATH, buf, bufsize)))
+    {
+      printf("bufsize = %ld too small!\nNeeds to be: %ld\n", bufsize, s);
+      buf = malloc(s);
+      bufsize = s;
+    }
+  if (s == 0)
+    buf = NULL;
+
+    path = buf;
+
+  printf("buffer size = %ld\nbuffer = %s\n", strlen(path) + 1, path);
+  printf("confstr returned: s=%ld\n", s);
+  }
+```
+
+<div class="my-code-results-wrapper">
+
+```text
+buffer size = 14
+buffer = /bin:/usr/bin
+confstr returned: s=14
+```
+</div>
 
 Okay, that's  `confstr`.
 
@@ -332,7 +428,7 @@ Back to the code!
 
 ## The Issue {#the-issue}
 
-```c { linenos=true, linenostart=1 }
+```c { class="my-code-wrapper", linenos=true, linenostart=1 }
 /* If necessary call confstr a second time with a bigger buffer.  */
 while (bufsize < (s = confstr (_CS_PATH, buf, bufsize)))
   {
@@ -374,7 +470,7 @@ That last step is **the whole bug**.
 
 Focusing in just on the body of the loop in the commit, we see:
 
-```c { linenos=true, linenostart=1 }
+```c { class="my-code-wrapper", linenos=true, linenostart=1 }
 /* If necessary call confstr again with a bigger buffer.  */
 for (size_t s;
      ! (s = confstr (_CS_PATH, buf, bufsize)) || bufsize < s; )
@@ -402,7 +498,7 @@ Those two assumptions contradict each other.
 
 That is why the patch adds:
 
-```c
+```C { class="my-code-wrapper", linenos=true, linenostart=1 }
 if (buf != staticbuf)
   xfree (buf);
 ```
