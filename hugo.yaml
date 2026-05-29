@@ -10,6 +10,7 @@ params:
   fullWidthTheme: false
   centerTheme: true
   math: true
+
 languages:
   en:
     params:
