@@ -137,7 +137,7 @@ Just a greedy pass through the data.
 
 Below is a Scheme implementation. A few comments are included for readers unfamiliar with the language.
 
-```lisp
+```lisp { linenos=true, linenostart=1 }
 (define (max-profit prices)
   (if (< (length prices) 2)
       0                                  ; fewer than two prices → no profit

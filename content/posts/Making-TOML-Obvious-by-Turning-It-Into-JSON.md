@@ -10,7 +10,7 @@ math: true
 
 I was looking at some `TOML` --- [Tom's Obvious Minimum Language](https://toml.io/en/) --- in a [Hugo](https://gohugo.io/) config file, pondering the configuration of a static site.
 
-{{< figure src="/ox-hugo/toml-config.png" class="my-screenshot" >}}
+{{< figure src="/ox-hugo/toml-config.png" >}}
 
 In Hugo, you have the choice between `YAML` --- [YAML Ain't Markup Language](https://yaml.org/) --- and TOML.
 
@@ -22,7 +22,7 @@ I say "claimed," but nothing about it seemed obvious to me. I really wanted to s
 
 Indeed, hashes and arrays, nested however and wherever, and it even uses square brackets and curly braces, to the delight of any [perl](https://www.perl.org/) programmer, the reference to which should inform you as to how I spent my tender youth.
 
-{{< figure src="https://imgs.xkcd.com/comics/lisp.jpg" class="my-screenshot" >}}
+{{< figure src="https://imgs.xkcd.com/comics/lisp.jpg" >}}
 
 Where was I?
 
@@ -51,7 +51,7 @@ At the time of writing, the [latest release](https://www.gnu.org/software/emacs/
 
 `M-x emacs-version` tells me:
 
-```text { class="my-example-10" }
+```text
 GNU Emacs 32.0.50 (build 4, x86_64-pc-linux-gnu,
   GTK+ Version 3.24.41, cairo version 1.18.0) of 2026-05-14.
 ```
@@ -60,7 +60,7 @@ Built it a few days ago, so, I'm good to go. Time to update my init file.
 
 This is good enough:
 
-```emacs-lisp { class="my-code" }
+```emacs-lisp
 (use-package tomlparse
   :ensure t
   :init
@@ -74,7 +74,7 @@ Now, I didn't want to do much. Just see some JSON equivalence for a bit of TOML.
 
 And here is the example given,
 
-```TOML { class="my-code" }
+```TOML
 [[product]]
 name = "Hammer"
 sku = 738594937
@@ -90,7 +90,7 @@ color = "gray"
 
 And to explain it, "JSON land" makes all clear:
 
-```json { class="my-code" }
+```json
 {
   "product": [
     { "name": "Hammer", "sku": 738594937 },
@@ -129,7 +129,7 @@ name = "plantain"
 
 But it's explained using JSON:
 
-```json { class="my-code" }
+```json
 {
   "fruits": [
     {
@@ -152,7 +152,7 @@ So, if the documentation uses JSON clarity to show TOML meaning, then why can't 
 
 Back to `tomlparse.el`. It provides `tomlparse-string`. The docstring reveals:
 
-```text { class="my-example-10" }
+```text
 Signature
 (tomlparse-string STRING &rest ARGS)
 
@@ -163,17 +163,17 @@ Return a hash table with the contents of the toml data STRING.
 
 Of course, the source code is exposed if we want to investigate:
 
-{{< figure src="/ox-hugo/tomlparse-string-source.png" class="my-screenshot" >}}
+{{< figure src="/ox-hugo/tomlparse-string-source.png" >}}
 
 That's great. We pass in a TOML string and we get back a hash object. But now that needs to be converted it to JSON --- for that `json-serialize` is the answer.
 
-{{< figure src="/ox-hugo/json-serialize.png" class="my-screenshot" >}}
+{{< figure src="/ox-hugo/json-serialize.png" >}}
 
 Interestingly, this is defined in `json.c` so it's native in emacs and not a call into an `.elc`.
 
 Here's a bit of the code:
 
-```c { class="my-code" }
+```C { linenos=true, linenostart=1 }
 static void
 json_serialize (json_out_t *jo, Lisp_Object object,
                 ptrdiff_t nargs, Lisp_Object *args)
@@ -207,7 +207,7 @@ I guess it's not turtles all the down! 🐢 🐢 🐢
 
 So, the little bit of Lisp I'm thinking about looks something like this:
 
-```elisp { class="my-code" }
+```elisp { linenos=true, linenostart=1 }
 (defun kes/toml2json ()
   "Convert TOML from clipboard to pretty JSON and put result back in clipboard."
   (interactive)
@@ -232,7 +232,7 @@ The only problem is we want our JSON to look pretty.
 
 There is a shell utility --- `jq` --- that does that, and lots more.
 
-{{< figure src="/ox-hugo/jq-man.png" class="my-screenshot" >}}
+{{< figure src="/ox-hugo/jq-man.png" >}}
 
 It would be a shame not to use it.
 
@@ -240,7 +240,7 @@ So, we just make a call to the shell from Lisp using `shell-command-to-string` -
 
 So, boldly,
 
-```elisp { class="my-code" }
+```elisp { linenos=true, linenostart=1 }
 (defun kes/toml2json ()
   "Convert toml from clipboard to json put result back in clipboard."
   (interactive)
@@ -270,7 +270,7 @@ However, we can do a bit better.
 
 Like this:
 
-```elisp { class="my-code" }
+```elisp { linenos=true, linenostart=1 }
 (defun kes/toml2json ()
   "Convert TOML from clipboard to pretty JSON and put result back in clipboard."
   (interactive)
@@ -310,15 +310,15 @@ Wins all around.[^fn:8]
 
 Here's the buffer --- I've copied the buffer text and it's in the clipboard. At the bottom you can see that I'm calling `kes/toml2json`.
 
-{{< figure src="/ox-hugo/demo-1.png" class="my-screenshot" >}}
+{{< figure src="/ox-hugo/demo-1.png" >}}
 
 Pressing return has shown the message I was expecting.
 
-{{< figure src="/ox-hugo/demo-2.png" class="my-screenshot" >}}
+{{< figure src="/ox-hugo/demo-2.png" >}}
 
 Now, I paste the contents of the clipboard into the buffer --- and it's the JSON representation of the TOML.
 
-{{< figure src="/ox-hugo/demo-3.png" class="my-screenshot" >}}
+{{< figure src="/ox-hugo/demo-3.png" >}}
 
 Neat!
 

@@ -132,7 +132,7 @@ That tradeoff is exactly what Category 1 never needs to consider.
 
 Here is a Scheme implementation:
 
-```lisp
+```lisp { linenos=true, linenostart=1 }
 (define (max-profit-once prices)
   (let loop ((ps prices)
              (min-price +inf.0)

@@ -201,8 +201,11 @@ img {
 .highlight.my-example-40 code,
 code.language-text, /* this is for :RESULTS */
 code.language-C,
-code.language-c
-    
+code.language-c,
+code.language-emacs-lisp,
+code.language-TOML,
+code.language-json,
+code.language-elisp
 {
     color: #eec35e;
 }
