@@ -17,23 +17,50 @@ div #post ol {
   padding:30px;
 }
 
-blockquote {
+/******************************************************/
+/* modifying                                          */
+/******************************************************/
+/* blockquote { */
 
-  border-left: 10px solid #ccc;
-  margin: 1.5em 10px;
-  padding: 0.5em 10px;
-  quotes: "\201C""\201D""\2018""\2019";
+/*   border-left: 10px solid #ccc; */
+/*   margin: 1.5em 10px; */
+/*   padding: 0.5em 10px; */
+/*   quotes: "\201C""\201D""\2018""\2019"; */
+/* } */
+/* blockquote:before { */
+/*   color: #ccc; */
+/*   content: open-quote; */
+/*   font-size: 4em; */
+/*   line-height: 0.1em; */
+/*   margin-right: 0.25em; */
+/*   vertical-align: -0.4em; */
+/* } */
+/* blockquote p { */
+/*   display: inline; */
+/* } */
+
+/* blockquote { */
+
+/*   border-left: 10px solid #ebc05c; */
+/*   margin: 3.5em 15%; */
+/*   padding: 25px 45px; */
+/*   quotes: "\201C""\201D""\2018""\2019"; */
+/*       box-shadow: 10px; */
+/* } */
+blockquote {
+    color:#eec35e;
+    margin: 1.5rem 10%;
+    padding: 1rem 1.25rem;
+    background: #282a36;
+    border-radius: 18px;
+    border: 2px solid #333333;
+    box-shadow: 2px 2px 2px #a98b43;
 }
-blockquote:before {
-  color: #ccc;
-  content: open-quote;
-  font-size: 4em;
-  line-height: 0.1em;
-  margin-right: 0.25em;
-  vertical-align: -0.4em;
+blockquote::before{
+
 }
 blockquote p {
-  display: inline;
+    display: inline;
 }
 div.highlight{
     overflow-x: auto;
