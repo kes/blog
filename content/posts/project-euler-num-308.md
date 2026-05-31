@@ -40,7 +40,7 @@ We can start with a simple `FRACTRAN` simulator in Common Lisp, then gradually u
 In Common Lisp, we can define the program easily as a list of lists. For each list in the list `*fp*` below, the `car` (i.e., the first element of the list) is the numerator, while the `cadr` (i.e., the second element of the list) is the denominator.
 
 <a id="code-snippet--fractran-program"></a>
-```lisp { class="my-code" }
+```lisp { class="my-code", linenos=true, linenostart=1 }
 (defparameter *fp*
   '((17 91) (78 85) (19 51) (23 38) (29 33)
     (77 29) (95 23) (77 19) (1 17) (11 13)
@@ -57,7 +57,7 @@ If we exhaust all the fractions and have not gotten an integer, the program halt
 
 So, our function looks like this:
 
-```lisp { class="my-code" }
+```lisp { class="my-code", linenos=true, linenostart=1 }
 (defun fractran-simulator (state program)
   "Apply STATE, to the PROGRAM using the multiplication operator.  Return
 the value of the first operation that evaluates to an integer,
@@ -72,7 +72,7 @@ otherwise return nil."
 Let's use an initial seed value of 2 (as the problem description says).
 
 <a id="code-snippet--fractran-simulator"></a>
-```lisp { class="my-code" }
+```lisp { class="my-code", linenos=true, linenostart=1 }
 (fractran-simulator 2 *fp*)
 ```
 
@@ -88,8 +88,7 @@ What do we get back from our simulator?
 This is the correct result for the first iteration. So, we're off to a good start. Let's do more iterations:
 
 <a id="code-snippet--simulator-run"></a>
-```lisp { class="my-code" }
-
+```lisp { class="my-code", linenos=true, linenostart=1 }
 (loop for i from 1 to 20
       with state = 2
       do (setf state (fractran-simulator state *fp*))
@@ -279,7 +278,7 @@ Perfect.
 
 Now let's put the factorization in a tabular form.
 
-```lisp { class="my-code" }
+```lisp { class="my-code", linenos=true, linenostart=1 }
 (defun eval-pf (l)
   (reduce (lambda (x y)
             (if (numberp  x)
@@ -305,7 +304,7 @@ Now let's put the factorization in a tabular form.
 Okay, that's a step in the right direction. Can we make a table of the first twenty iterations? Let's try.
 
 <a id="code-snippet--create-table"></a>
-```lisp { class="my-code" }
+```lisp { class="my-code", linenos=true, linenostart=1 }
 (loop for i from 1 to 20
       with state = 2
       collect (get-status i (setf state (fractran-simulator state *fp*))))
@@ -367,7 +366,7 @@ border: 1px black solid;
 That's getting there. Let's add some headers.
 
 <a id="code-snippet--FORMAT-TABLE"></a>
-```elisp { class="my-code" }
+```elisp { class="my-code", linenos=true, linenostart=1 }
 (let (value)
   (dolist (p table value)
     (setf (nth 5 p) (if (= (nth 5 p) 0) '-- (nth 5 p)))
@@ -495,9 +494,48 @@ Note that the `FRACTRAN` program runs from left to right, so in the event of mor
 
 Working in this way, we can define our FSM as follows (if you are not conversant with dot code, don't worry about it, the actual diagram follows):
 
+```c { class="my-code", linenos=true, linenostart=1 }
+digraph finite_state_machine {
+    graph [pad="0.5", nodesep="1", ranksep="2"];
+    splines=true;
+        fontname="Helvetica,Arial,sans-serif"
+        node [fontname="Helvetica,Arial,sans-serif"]
+        edge [fontname="Helvetica,Arial,sans-serif"]
+
+        node [shape = doublecircle]; 2
+        node [shape = circle];
+2->S1
+S1:n -> S1:n[margin=1;headlabel="(1) -2, +3, +5";color=blue];
+S1:e -> S1[label="(2) -7";color=red];
+S1 -> S11[label="(3) +5"; color=green];
+
+S11 -> S29[label="(1) -3";color=blue];
+S11 -> S13[label="(2) null";color=red];
+
+S13:se -> S17:sw[label="(1) -7";color=blue];
+S13 -> S11[label="(2) null";color=red];
+
+
+S17 -> S13[label="(1) -5, +2, +3";color=blue];
+S17 -> S19:sw[label="(2) -3";color=red];
+S17 -> S1[label="(3) null"; color=green];
+
+S19 -> S23:nw[label="(1) -2";color=blue];
+S19:w -> S11:e[label="(2) +7";color=red];
+
+
+S23:e -> S19:e[label="(1) +5";labelangle=5;color=blue];
+S29 -> S11[label="(1) +7";color=blue];
+
+{ rank=min; S1;2  }
+{rank=same; S11;S19};
+{ rank=max;  S23;S13; S17; }
+}
+```
+
 From the fraction list, the following is the equivalent finite state machine, where each “node” corresponds to one of the large primes \\( 11,13,17,19,23,29 \\) and the factors \\( 2,3,5,7 \\) the “registers” in the system.
 
-{{< figure src="/ox-hugo/test.png" >}}
+{{< figure src="/ox-hugo/test.png" class="my-screenshot" >}}
 
 Here's how it works. On start, you pass in a \\( 2 \\) to `S1`.
 
@@ -532,18 +570,31 @@ What follows is my first attempt at developing the FSM. It works in the sense th
 
 You can happily skip this section if you are so inclined. Below, you can find a working solution:  [FRACTRAN For Real](#fractran-for-real)
 
-```lisp { class="my-code" }
-(defparameter *fractran-program* '((17 91) (78 85) ( 19 51) ( 23 38) (29 33) (77 29) (95 23) (77 19) (1 17) (11 13) (13 11) (15 2) (1 7) (55 1)))
-(defparameter *fractran-registers* '(:rs 1 :rp 0 :rc 0 :r1 0 :r2 1 :r3 0 :r5 0 :r7 0 :r11 0 :r13 0 :r17 0 :r19 0 :r23 0 :r29 0 ))
+```lisp { class="my-code", linenos=true, linenostart=1 }
+(defparameter *fractran-program*
+  '((17 91) (78 85) ( 19 51) ( 23 38) (29 33)
+    (77 29) (95 23) (77 19) (1 17) (11 13)
+    (13 11) (15 2) (1 7) (55 1)))
+(defparameter *fractran-registers*
+  '(:rs 1 :rp 0 :rc 0 :r1 0 :r2 1 :r3 0 :r5 0
+    :r7 0 :r11 0 :r13 0 :r17 0 :r19 0 :r23 0
+    :r29 0 ))
 
 (defmacro r (x)
-  `(getf reg ,(read-from-string (concatenate 'string ":r" (write-to-string x)))))
+  `(getf reg ,(read-from-string
+               (concatenate 'string ":r"
+                            (write-to-string x)))))
 
 (defmacro fr (x)
-  `(getf *fractran-registers* ,(read-from-string (concatenate 'string ":r" (write-to-string x)))))
+  `(getf *fractran-registers*
+         ,(read-from-string
+           (concatenate 'string ":r"
+                        (write-to-string x)))))
 
 (defmacro state-change (os ns)
-  (list 'progn `(decf (r ,os)) `(incf (r ,ns)) `(setf (r s) ,ns)))
+  (list 'progn `(decf (r ,os))
+        `(incf (r ,ns))
+        `(setf (r s) ,ns)))
 ```
 
 In the above the FSM state factors are: r2, r3, r5, r7, and the nodes r11, r13, r17, r19, r23 and r29.
@@ -558,9 +609,10 @@ You can also see a few convenience macros that made setting the exponents and ch
 
 So, in the following code I simply go to whatever state the register says I'm in.
 
-```lisp { class="my-code" }
+```lisp { class="my-code", linenos=true, linenostart=1 }
 (defun fractran (reg)
-"Calls the required state with the register. returns a list of state and register."
+"Calls the required state with the register.
+returns a list of state and register."
 (cond ((= (r s) 1) (s1 reg))
         ((= (r s) 11) (s11 reg))
         ((= (r s) 13) (s13 reg))
@@ -584,7 +636,7 @@ Remember what we can do in `S1`. We must follow the specific order:
 Also, in `S1` a check is made for a power of two.
 
 <a id="code-snippet--S1"></a>
-```lisp { class="my-code" }
+```lisp { class="my-code", linenos=true, linenostart=1 }
 (defun s1 (reg)
   (if (and (= (r 3) 0)
            (= (r 5) 0)
@@ -608,7 +660,7 @@ Also, in `S1` a check is made for a power of two.
 Each state that follows is very easy to follow. A simple implementation of the fractran program.
 
 <a id="code-snippet--S11"></a>
-```lisp { class="my-code" }
+```lisp { class="my-code", linenos=true, linenostart=1 }
 (defun s11 (reg)
   (incf (r c))
   (cond ((> (r 3) 0)
@@ -621,7 +673,7 @@ Each state that follows is very easy to follow. A simple implementation of the f
 ### S13 {#s13}
 
 <a id="code-snippet--S13"></a>
-```lisp { class="my-code" }
+```lisp { class="my-code", linenos=true, linenostart=1 }
 (defun s13 (reg)
   (incf (r c))
   (cond ((> (r 7) 0)
@@ -634,7 +686,7 @@ Each state that follows is very easy to follow. A simple implementation of the f
 ### S17 {#s17}
 
 <a id="code-snippet--S17"></a>
-```lisp { class="my-code" }
+```lisp { class="my-code", linenos=true, linenostart=1 }
 (defun s17 (reg)
   (incf (r c))
   (cond ((> (r 5) 0)
@@ -651,7 +703,7 @@ Each state that follows is very easy to follow. A simple implementation of the f
 
 ### S19 {#s19}
 
-```lisp { class="my-code" }
+```lisp { class="my-code", linenos=true, linenostart=1 }
 (defun s19 (reg)
   (incf (r c))
   (cond ((> (r 2) 0)
@@ -665,7 +717,7 @@ Each state that follows is very easy to follow. A simple implementation of the f
 
 ### S23 S29 {#s23-s29}
 
-```lisp { class="my-code" }
+```lisp { class="my-code", linenos=true, linenostart=1 }
 (defun s23 (reg)
   (incf (r c))
   (incf (r 5))
@@ -681,7 +733,7 @@ Each state that follows is very easy to follow. A simple implementation of the f
 ### Miscellaneous {#miscellaneous}
 
 <a id="code-snippet--iterate"></a>
-```lisp { class="my-code" }
+```lisp { class="my-code", linenos=true, linenostart=1 }
     (defun init-fr ()
     (setf (fr c) 0)
     (setf (fr s) 1)
@@ -713,8 +765,11 @@ Each state that follows is very easy to follow. A simple implementation of the f
 (defun iterate (i-number)
   (loop repeat i-number
         do (fractran *fractran-registers*)
-        collect (list  (fr c) (fr s) (fr 2) (fr 3) (fr 5) (fr 7) (fr 11)
-          (fr 13) (fr 17) (fr 19) (fr 23) (fr 29) (calc-amount))))
+        collect
+        (list  (fr c) (fr s) (fr 2) (fr 3)
+               (fr 5) (fr 7) (fr 11)(fr 13)
+               (fr 17) (fr 19) (fr 23) (fr 29)
+               (calc-amount))))
 (init-fr)
 (iterate 20)
 ```
@@ -837,7 +892,7 @@ I also identified some optimizations. These are easily discernible from the FSM 
 
 The code below is very simple. One thing to note is that there are no loops, only `gotos`. We simply move from node to node (called "states" in the code) until we get our answer.
 
-```lisp { class="my-code" }
+```lisp { class="my-code", linenos=true, linenostart=1 }
 
 (defparameter *f-count* 0 "iteration count")
 (defparameter *f-primes* 0 "count of prime found so far")
@@ -871,7 +926,9 @@ The code below is very simple. One thing to note is that there are no loops, onl
         (five *five*)
         (seven *seven*)
         (min 0))
-    (declare (type fixnum f-count f-primes f-primes-wanted two three five seven min))
+    (declare (type fixnum f-count f-primes
+                   f-primes-wanted two three
+                   five seven min))
     (print 'hello)
     (tagbody
      state1
@@ -935,7 +992,8 @@ The code below is very simple. One thing to note is that there are no loops, onl
                ;; state17. Code commented out but left for
                ;; documentation.
                (progn
-                 ;; either we run out of sevens first, or fives, so which is minimum?
+                 ;; either we run out of sevens first, or fives,
+                 ;; so which is minimum?
                  (setf min (if (< seven five)
                                seven
                                five))
