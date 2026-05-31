@@ -47,13 +47,13 @@ While it is possible to edit the `#+TBLFM` line directly, Emacs has a formula ed
 
 This will open a buffer where the formula can be edited.
 
-{{< figure src="/ox-hugo/edit-formulas.png" class="my-screenshot" >}}
+{{< figure src="/ox-hugo/edit-formulas.png" >}}
 
 Org's standard notation for cell references is to use the prefixes "@" and "$." However, you can use letters for columns and numbers for rows. So, row three, column two, can be referenced as B3.
 
 However, this feature is only available in the formula editor. If you choose to enter a formula in this way, Org will convert it to its preferred notation in the `#+TBLFM` line when you exit the buffer. In no case will Org recognize letters and numbers in the `#+TBLFM`.
 
-{{< figure src="/ox-hugo/editing-formulas-letter-number-syntax.png" class="my-screenshot" >}}
+{{< figure src="/ox-hugo/editing-formulas-letter-number-syntax.png" >}}
 
 This feature works only if you have set the variable `org-table-use-standard-references` to either 'from or 't. See the variable's docstring for details.[^fn:1]
 
@@ -78,7 +78,7 @@ Multiple formulas in the `#+TBLFM:` line are separated by a double colon, `::`.
 
 Long formulas can be tiresome to edit directly under the table. Use the table formula editor `C-c '` and Emacs will separate the formulas each on its own line. When done, `C-c C-c` to exit, and Emacs puts the `#+TBLFM:` line back together nicely separated with the required `::`.
 
-{{< figure src="/ox-hugo/edit-long-formulas.png" class="my-screenshot" >}}
+{{< figure src="/ox-hugo/edit-long-formulas.png" >}}
 
 At this point you've seen enough to enter basic formulas. But there is much more! Let's move on and discuss how to reference a cell in detail.
 
@@ -130,7 +130,7 @@ We aren't limited, of course, to just assigning values to cells. We can calculat
 
 Or in the formula editor:
 
-{{< figure src="/ox-hugo/editing-breakfast.png" class="my-screenshot" >}}
+{{< figure src="/ox-hugo/editing-breakfast.png" >}}
 
 Notice that we have added a `;%.2f` to the end of the second and third formulas to nicely format our output.
 
@@ -896,7 +896,7 @@ These calculate totals, means, and maximums for each test column.
 
 When formulas begin to get long and complex, the formula editor becomes necessary:
 
-{{< figure src="/ox-hugo/6formula.png" class="my-screenshot" >}}
+{{< figure src="/ox-hugo/6formula.png" >}}
 
 Notice that it helpfully divides the formulas according to type, "column formulas" and "field and range formulas." (Not shown, but as you move your cursor on the formula, Emacs will also highlight the fields in the main buffer.)
 

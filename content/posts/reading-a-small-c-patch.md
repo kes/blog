@@ -10,19 +10,19 @@ I was using [Magit](https://magit.vc/) to browse the Emacs git repository.
 
 I came across this interesting commit entitled: "Plug default_PATH memory leak"[^fn:1].
 
-{{< figure src="/ox-hugo/git-emacs-master-log.png" class="my-screenshot" >}}
+{{< figure src="/ox-hugo/git-emacs-master-log.png" >}}
 
 Memory leaks are a huge problem, so I was interested.
 
 Looking at coding changes can be a wall of symbols. Even for small changes, and this one was small. Only one file was changed with 12 insertions and 9 deletions. And the Magit interface was helpfully color coding each.
 
-{{< figure src="/ox-hugo/git-emacs-revision.png" class="my-screenshot" >}}
+{{< figure src="/ox-hugo/git-emacs-revision.png" >}}
 
 On first impression the obvious change was from a `while` loop to a `for` --- that feels stylistic --- but clearly there's more going on.
 
 But the common code, the code not changed, was also there.
 
-{{< figure src="/ox-hugo/xmalloc-common-code.png" class="my-screenshot" >}}
+{{< figure src="/ox-hugo/xmalloc-common-code.png" >}}
 
 I felt like I wanted to see just the original code.
 
@@ -30,22 +30,22 @@ With git this is definitely possible.
 
 First, find the parent of the commit. In this case, this is easily done by simply going to the previous commit. (Magit also provides a command `C-c C-n` for moving to the \\(n^{th}\\) parent.) You can see that the parent of `59b2` is `1eb2`.
 
-{{< figure src="/ox-hugo/magit-move-to-parent.png" class="my-screenshot" >}}
+{{< figure src="/ox-hugo/magit-move-to-parent.png" >}}
 
 Moving to that commit, then `magit-find-file` for the revision. (Pressing enter here.)
 
-{{< figure src="/ox-hugo/magit-find-file.png" class="my-screenshot" >}}
+{{< figure src="/ox-hugo/magit-find-file.png" >}}
 
 And then we just go to the source file we want to see.
 
-{{< figure src="/ox-hugo/find-file-in-revision.png" class="my-screenshot" >}}
+{{< figure src="/ox-hugo/find-file-in-revision.png" >}}
 
 
 ## The Original Code {#the-original-code}
 
 The entire function (unmodified) is about 40 lines long.
 
-```c { class="my-code", linenos=true, linenostart=1 }
+```c { linenos=true, linenostart=1 }
 /* Return the default PATH if it can be determined, NULL otherwise.  */
 
 static char const *
@@ -93,8 +93,8 @@ default_PATH (void)
 
 The code is interesting. If we look just at the top \\(\ldots\\)
 
-```c { class="my-code", linenos=true, linenostart=1 }
- /* Return the default PATH if it can be determined, NULL otherwise.  */
+```c { linenos=true, linenostart=1 }
+ /* Return the default PATH if it can be determined, NULL otherwise. */
 
  static char const *
  default_PATH (void)
@@ -122,7 +122,7 @@ There's also the `static char staticbuff[16]` those 16 bytes are allocated at co
 
 The first time this function is called the expression `!staticbuf[0]` will be true. Let's see what happens in the body of the code. (I've removed the C preprocessor directive.)
 
-```c { class="my-code", linenos=true, linenostart=1 }
+```c { linenos=true, linenostart=1 }
 if (!staticbuf[0])
   {
     char *buf = staticbuf;
@@ -152,7 +152,7 @@ The expression `(s = confstr (_CS_PATH, buf, bufsize))` sets the value of `s` to
 
 So, logically we have:
 
-```c { class="my-code", linenos=true, linenostart=1 }
+```c { linenos=true, linenostart=1 }
 s = confstr (_CS_PATH, buf, bufsize);
 while (bufsize < s){
   /* must need a larger buffer! */
@@ -168,43 +168,36 @@ while (bufsize < s){
 
 {{< figure src="/ox-hugo/man-page-confstr-1.png" class="my-screenshot" >}}
 
-The man pages says:
+The man pages contains:
 
-```text { class="my-example" }
-confstr() gets the value of configuration-dependent string variables.
-```
+```text
+confstr - gets the value of configuration-dependent string variables.
 
-And it gives a signature:
+#include <unistd.h>
 
-```text { class="my-example-10" }
 size_t confstr(int name, char buf[.size], size_t size);
+
+...
+
+ _CS_PATH
+    A value for the PATH variable which indicates where all the
+    POSIX.2 standard utilities can be found.
+
+...
+
+ If buf is not NULL and size is not zero, confstr() copies the value of the
+ string to buf truncated to size - 1 bytes if necessary, with a null byte
+ ('\0') as terminator.  This can be detected by comparing the return value
+ of confstr() against size.
 ```
 
-And further:
-
-```text { class="my-example-10" }
-_CS_PATH
-   A value for the PATH variable which indicates where all the
-   POSIX.2 standard utilities can be found.
-```
-
-And also,
-
-```text { class="my-example-10" }
-If  buf  is  not NULL and size is not zero, confstr() copies
-the  value of the  string to buf truncated to size - 1 bytes
-if necessary,  with a null byte ('\0') as terminator.  This
-can be detected by comparing the return value of confstr()
-against size.
-```
-
-Oh. It copies the path into the buffer. That's easy enough.
+Oh --- It copies the path into the buffer. That's easy enough.
 
 Let's test it.
 
 I wrote the following, a simple call to confstr and printing the results.
 
-```C { class="my-code", linenos=true, linenostart=1 }
+```C { linenos=true, linenostart=1 }
 #include <stdio.h>
 #include <unistd.h>
 
@@ -226,11 +219,16 @@ int main() {
 }
 ```
 
+```text
+buffsize = 16
+buffer = /bin:/usr/bin
+confstr returned: n=14
+Yea!! Buffer big enough!
+```
+
 Nothing complicated here. But I was curious. I really didn't know if 16 bytes would be big enough for the buffer. Only one way to find out.
 
 So, running.
-
-<div class="my-code">
 
 ```text
 buffsize = 16
@@ -238,13 +236,12 @@ buffer = /bin:/usr/bin
 confstr returned: n=14
 Yea!! Buffer big enough!
 ```
-</div>
 
 Okay, 16 bytes is big enough. Let's make the buffer too small.
 
 A `buffer[10]` should do the trick.
 
-```C { class="my-code", linenos=true, linenostart=1 }
+```C { linenos=true, linenostart=1 }
 #include <stdio.h>
 #include <unistd.h>
 
@@ -268,15 +265,12 @@ int main() {
 
 And then run and the output is:
 
-<div class="my-code">
-
 ```text
 buffsize = 10
 buffer = /bin:/usr
 confstr returned: n=14
 uh-oh!! --- buffer too small!
 ```
-</div>
 
 This is very helpful. It demonstrates that `confstr` returns the size needed but also returns what it can an truncates the rest.
 
@@ -284,7 +278,7 @@ But that raises the question, what do you do if the static buffer is too small?
 
 The man page has example code that gets the size needed from confstr, and then allocates the memory. Like this:
 
-```c { class="my-code", linenos=true, linenostart=1 }
+```C { linenos=true, linenostart=1 }
 char *pathbuf;
 size_t n;
 
@@ -299,7 +293,7 @@ The man page example doesn't even bother trying a static buffer with a predefine
 
 Let's try it.
 
-```C { class="my-code", linenos=true, linenostart=1 }
+```C { linenos=true, linenostart=1 }
 #include <stdio.h>
 #include <unistd.h>
 #include<stdlib.h>
@@ -325,8 +319,6 @@ void main (){
 }
 ```
 
-<div class="my-code">
-
 ```text
 buffer size = 14
 buffer = /bin:/usr/bin
@@ -334,7 +326,6 @@ first call confstr returned: n=14
 second call confstr returned: m=14
 Yea!! Buffer big enough!
 ```
-</div>
 
 Okay. So, we know what confstr does.
 
@@ -344,7 +335,7 @@ Sure, why not?
 
 Let's try it!
 
-```C { class="my-code", linenos=true, linenostart=1 }
+```C { linenos=true, linenostart=1 }
 #include <stdio.h>
 #include <unistd.h>
 #include<stdlib.h>
@@ -372,8 +363,6 @@ void main (){
   }
 ```
 
-<div class="my-code">
-
 ```text
 bufsize = 10 too small!
 Needs to be: 14
@@ -381,11 +370,10 @@ buffer size = 14
 buffer = /bin:/usr/bin
 confstr returned: s=14
 ```
-</div>
 
 And when we declare: `static char staticbuf [16]`.
 
-```C { class="my-code", linenos=true, linenostart=1 }
+```C { linenos=true, linenostart=1 }
 #include <stdio.h>
 #include <unistd.h>
 #include<stdlib.h>
@@ -413,14 +401,11 @@ void main (){
   }
 ```
 
-<div class="my-code">
-
 ```text
 buffer size = 14
 buffer = /bin:/usr/bin
 confstr returned: s=14
 ```
-</div>
 
 Okay, that's  `confstr`.
 
@@ -429,7 +414,7 @@ Back to the code!
 
 ## The Issue {#the-issue}
 
-```c { class="my-code", linenos=true, linenostart=1 }
+```c { linenos=true, linenostart=1 }
 /* If necessary call confstr a second time with a bigger buffer.  */
 while (bufsize < (s = confstr (_CS_PATH, buf, bufsize)))
   {
@@ -471,7 +456,7 @@ That last step is **the whole bug**.
 
 Focusing in just on the body of the loop in the commit, we see:
 
-```c { class="my-code", linenos=true, linenostart=1 }
+```c { linenos=true, linenostart=1 }
 /* If necessary call confstr again with a bigger buffer.  */
 for (size_t s;
      ! (s = confstr (_CS_PATH, buf, bufsize)) || bufsize < s; )
@@ -499,7 +484,7 @@ Those two assumptions contradict each other.
 
 That is why the patch adds:
 
-```C { class="my-code", linenos=true, linenostart=1 }
+```C { linenos=true, linenostart=1 }
 if (buf != staticbuf)
   xfree (buf);
 ```

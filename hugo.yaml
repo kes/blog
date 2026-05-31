@@ -1,5 +1,5 @@
 baseURL: https://kes.github.io/
-languageCode: en-us
+local: en-us
 theme: terminal
 pagination:
   pagerSize: 15
