@@ -36,7 +36,7 @@ In Org, formulas for how to calculate the value of a cell are specified in a `#+
 
 As an example, here is a table in which the contents of the first and third column are added and placed in the fifth. Notice that the formula is in the `#+TBLFM` line.
 
-```text
+```text { class="my-example-30" }
 | 111 | + | 222 | = | 333 |
 #+TBLFM: @1$5=@1$1+@1$3
 ```
@@ -47,13 +47,13 @@ While it is possible to edit the `#+TBLFM` line directly, Emacs has a formula ed
 
 This will open a buffer where the formula can be edited.
 
-{{< figure src="/ox-hugo/edit-formulas.png" width="1000px" >}}
+{{< figure src="/ox-hugo/edit-formulas.png" class="my-screenshot" >}}
 
 Org's standard notation for cell references is to use the prefixes "@" and "$." However, you can use letters for columns and numbers for rows. So, row three, column two, can be referenced as B3.
 
 However, this feature is only available in the formula editor. If you choose to enter a formula in this way, Org will convert it to its preferred notation in the `#+TBLFM` line when you exit the buffer. In no case will Org recognize letters and numbers in the `#+TBLFM`.
 
-{{< figure src="/ox-hugo/editing-formulas-letter-number-syntax.png" width="1000px" >}}
+{{< figure src="/ox-hugo/editing-formulas-letter-number-syntax.png" class="my-screenshot" >}}
 
 This feature works only if you have set the variable `org-table-use-standard-references` to either 'from or 't. See the variable's docstring for details.[^fn:1]
 
@@ -61,14 +61,14 @@ Org tables do not automatically run the calculations. Position the cursor on the
 
 Note, if editing the `#+TBLFM` line directly, the space after `#+TBLFM:` is required.
 
-```text
+```text { class="my-example-30" }
 | 5 | + | 8 | = | 13 |
 #+TBLFM: @1$5=@1$1 + @1$3
 ```
 
 Multiple formulas in the `#+TBLFM:` line are separated by a double colon, `::`.
 
-```text
+```text { class="my-example-20" }
 |  5 | + | 8 | = | 13 |
 | 10 | + | 8 | = | 18 |
 | 20 | + | 8 | = | 28 |
@@ -78,7 +78,7 @@ Multiple formulas in the `#+TBLFM:` line are separated by a double colon, `::`.
 
 Long formulas can be tiresome to edit directly under the table. Use the table formula editor `C-c '` and Emacs will separate the formulas each on its own line. When done, `C-c C-c` to exit, and Emacs puts the `#+TBLFM:` line back together nicely separated with the required `::`.
 
-{{< figure src="/ox-hugo/edit-long-formulas.png" width="1000px" >}}
+{{< figure src="/ox-hugo/edit-long-formulas.png" class="my-screenshot" >}}
 
 At this point you've seen enough to enter basic formulas. But there is much more! Let's move on and discuss how to reference a cell in detail.
 
@@ -105,7 +105,7 @@ Example: to reference row three and column two you would write:  `@3$2`
 
 Here is a table. You can see how the absolute references are working. There are exactly nine formulas[^fn:2] separated by `::`.
 
-```text
+```text { class="my-example" }
 | 1 | 2 | 3 |
 | 4 | 5 | 6 |
 | 7 | 8 | 9 |
@@ -114,7 +114,7 @@ Here is a table. You can see how the absolute references are working. There are 
 
 We aren't limited, of course, to just assigning values to cells. We can calculate values using the values from other cells, too.
 
-```text
+```text { class="my-example-10" }
 | Breakfast   | Cost |
 |-------------+------|
 | Eggs        | 2.99 |
@@ -130,7 +130,7 @@ We aren't limited, of course, to just assigning values to cells. We can calculat
 
 Or in the formula editor:
 
-{{< figure src="/ox-hugo/editing-breakfast.png" width="1000px" >}}
+{{< figure src="/ox-hugo/editing-breakfast.png" class="my-screenshot" >}}
 
 Notice that we have added a `;%.2f` to the end of the second and third formulas to nicely format our output.
 
@@ -159,7 +159,7 @@ But for which row? The answer is, for every applicable row. (More about "applica
 
 So, given:
 
-```text
+```text { class="my-example-30" }
 |   | foo    |
 |   | bar    |
 |   | baz    |
@@ -169,7 +169,7 @@ So, given:
 
 And positioning our cursor on the `#+TBLFM` line and pressing `C-c C-c` we get:
 
-```text
+```text { class="my-example-30" }
 | 99 | foo    |
 | 99 | bar    |
 | 99 | baz    |
@@ -195,7 +195,7 @@ To verify that the header is row 1, and the hline is not its own row, put your c
 
 Consider this table.
 
-```text
+```text { class="my-example-30" }
 | qux   | quux   |
 |-------+--------|
 | alpha | foo    |
@@ -211,7 +211,7 @@ Let's try it.
 
 `C-c C-c` yields \\(\ldots\\)
 
-```text
+```text { class="my-example-30" }
 | qux | quux   |
 |-----+--------|
 | 101 | foo    |
@@ -225,7 +225,7 @@ You see, "qux" did not get overwritten but everything else did. This is because 
 
 Of course, we're not limited to just assigning constant values. Here, we introduce the use of a function for calculation.
 
-```text
+```text { class="my-example-20" }
 | Base | Power | Base^Power |
 |------+-------+------------|
 |    2 |     0 |          1 |
@@ -247,7 +247,7 @@ Or, more compactly:
 
 Here, \\$3 is the target column. On the right-hand side, \\$1 and \\$2 refer to columns 1 and 2 in the row currently being processed. So as Org recalculates the table, it effectively does this:
 
-```text
+```text { class="my-example-10" }
 row 2: column 3 = pow(column 1, column 2) = pow(2, 0) = 1
 row 3: column 3 = pow(column 1, column 2) = pow(2, 1) = 2
 row 4: column 3 = pow(column 1, column 2) = pow(2, 2) = 4
@@ -256,7 +256,7 @@ row 4: column 3 = pow(column 1, column 2) = pow(2, 2) = 4
 
 The good news is that we do not have to say all of that every time. Once the notation becomes familiar, the formula reads naturally:
 
-```text
+```text { class="my-example-10" }
 #+TBLFM: $3=pow($1,$2)
 
 Column 3 is calculated from columns 1 and 2 in the same row.
@@ -275,7 +275,7 @@ And a plain English statement we might begin with, "for each column in row 2, \\
 
 For example:
 
-```text
+```text { class="my-example-30" }
 | foo | bar | baz | foobar |
 |  99 |  99 |  99 |     99 |
 | 100 | 100 | 100 |    100 |
@@ -289,7 +289,7 @@ Let's return to our power table.
 
 Looks a bit different now.
 
-```text
+```text { class="my-example-20" }
 | Base       | 2 | 2 | 2 | 2 |  2 |  2 |
 | Power      | 0 | 1 | 2 | 3 |  4 |  5 |
 | Base^Power | 1 | 2 | 4 | 8 | 16 | 32 |
@@ -352,7 +352,7 @@ So, if we wanted to references one column to the left of the column of the table
 
 In the following table we have not yet run the calculations. What is going on here? What will happen?
 
-```text
+```text { class="my-example-30" }
 |   A |   B | C | D |
 |-----+-----+---+---|
 | 100 | 200 |   |   |
@@ -363,7 +363,7 @@ In the following table we have not yet run the calculations. What is going on he
 
 In this example we have two formulas:
 
-```text
+```text { class="my-example-40" }
 $3=$-2 + 1
 $4=$-2 + 5
 ```
@@ -380,7 +380,7 @@ That last phrase is important: relative to the field currently being calculated.
 
 So in the first formula:
 
-```text
+```text { class="my-example-40" }
 $3=$-2 + 1
 ```
 
@@ -388,7 +388,7 @@ the field being calculated is in column 3. Therefore `$-2` refers to the column 
 
 In the second formula:
 
-```text
+```text { class="my-example-40" }
 $4=$-2 + 5
 ```
 
@@ -396,7 +396,7 @@ the field being calculated is in column 4. Therefore `$-2` refers to the column 
 
 After running the calculations, the table becomes:
 
-```text
+```text { class="my-example-30" }
 |   A |   B |   C |   D |
 |-----+-----+-----+-----|
 | 100 | 200 | 101 | 205 |
@@ -418,7 +418,7 @@ If you've understood relative column references, then relative row references sh
 
 The row references are relative to the row of the field which is being computed.
 
-```text
+```text { class="my-example-20" }
 | A | 990 | 300 | 500 |
 | B | 200 | 400 | 600 |
 | C | 101 | 301 | 501 |
@@ -434,7 +434,7 @@ We ask relative to what? And the answer is, relative to row 5. So, `@-4` must me
 
 We run the calculation and get:
 
-```text
+```text { class="my-example-20" }
 | A             |  990 |  300 |  500 |
 | B             |  200 |  400 |  600 |
 | C             |  101 |  301 |  501 |
@@ -452,25 +452,25 @@ The reason is that `@5` is a row formula. It applies across the row, column by c
 
 So for column 2, Org calculates:
 
-```text
+```text { class="my-example-30" }
 990 + 200 + 101 + 205
 ```
 
 For column 3, it calculates:
 
-```text
+```text { class="my-example-30" }
 300 + 400 + 301 + 405
 ```
 
 For column 4, it calculates:
 
-```text
+```text { class="my-example-30" }
 500 + 600 + 501 + 605
 ```
 
 And for column 1, it calculates:
 
-```text
+```text { class="my-example-30" }
 A + B + C + D
 ```
 
@@ -480,7 +480,7 @@ This is a useful lesson: row formulas apply across columns, and Org does not hav
 
 Org gives a way to do this easily. Like this:
 
-```text
+```text { class="my-example-20" }
 | A     | 990 | 300 | 500 |
 | B     | 200 | 400 | 600 |
 | C     | 101 | 301 | 501 |
@@ -494,7 +494,7 @@ Notice that the target `@5$2..@5$4=` is what is called a range (notice the two d
 
 We will cover ranges in more detail shortly. For now, let's run the calculations.
 
-```text
+```text { class="my-example-20" }
 | A     |  990 |  300 |  500 |
 | B     |  200 |  400 |  600 |
 | C     |  101 |  301 |  501 |
@@ -517,7 +517,7 @@ Ranges are vectors and can be used in various ways. For example, we can pass a r
 
 First let's remember it:
 
-```text
+```text { class="my-example-20" }
 | A     |  990 |  300 |  500 |
 | B     |  200 |  400 |  600 |
 | C     |  101 |  301 |  501 |
@@ -529,7 +529,7 @@ First let's remember it:
 
 We are happy with the formula, basically. But the right-hand side does seem a bit verbose.  Let's call a function to do the summation, and not only that, but a function that accepts a range. Like this:
 
-```text
+```text { class="my-example-20" }
 | A     | 990 | 300 | 500 |
 | B     | 200 | 400 | 600 |
 | C     | 101 | 301 | 501 |
@@ -541,7 +541,7 @@ We are happy with the formula, basically. But the right-hand side does seem a bi
 
 Let's run the calculation:
 
-```text
+```text { class="my-example-20" }
 | A     |  990 |  300 |  500 |
 | B     |  200 |  400 |  600 |
 | C     |  101 |  301 |  501 |
@@ -555,7 +555,7 @@ And it works! Not only is the formula more concise, it's also more clear what ou
 
 Now, what happens if we shorten our range on the left-hand side to `@5$2..@5$3`, like this (note, I've removed the calculations and add the text "foo") --- this is before calculations:
 
-```text
+```text { class="my-example-20" }
 | A     | 990 | 300 | 500 |
 | B     | 200 | 400 | 600 |
 | C     | 101 | 301 | 501 |
@@ -567,7 +567,7 @@ Now, what happens if we shorten our range on the left-hand side to `@5$2..@5$3`,
 
 Running the calculation:
 
-```text
+```text { class="my-example-20" }
 | A     |  990 |  300 | 500 |
 | B     |  200 |  400 | 600 |
 | C     |  101 |  301 | 501 |
@@ -581,7 +581,7 @@ That was certainly expected. The left-hand side specified a range of only two ce
 
 But what happens if the range sent to function vsum is too large and goes outside the table?
 
-```text
+```text { class="my-example-20" }
 | A     |  990 |  300 |  500 |
 | B     |  200 |  400 |  600 |
 | C     |  101 |  301 |  501 |
@@ -593,7 +593,7 @@ But what happens if the range sent to function vsum is too large and goes outsid
 
 Running the calculation, and we get a helpful message displayed:
 
-```text
+```text { class="my-example-10" }
 org-table--row-type: Row descriptor -9 leads outside table
 ```
 
@@ -601,7 +601,7 @@ It would be interesting if we could see exactly what's passed to `vsum`.
 
 Here's a hack we can do. Let's call a function that doesn't exist. We'll call it `foobar`.
 
-```text
+```text { class="my-example-20" }
 | A     |  990 |  300 |  500 |
 | B     |  200 |  400 |  600 |
 | C     |  101 |  301 |  501 |
@@ -613,7 +613,7 @@ Here's a hack we can do. Let's call a function that doesn't exist. We'll call it
 
 Running the calculation using a non-existent function gives us this:
 
-```text
+```text { class="my-example" }
 | A     |                          990 |                          300 |                          500 |
 | B     |                          200 |                          400 |                          600 |
 | C     |                          101 |                          301 |                          501 |
@@ -640,7 +640,7 @@ And so on. I don't know if there's an upper limit.
 
 Let's go back to a previous example --- the table holding our cost for breakfast --- it had a long formula.
 
-```text
+```text { class="my-example-10" }
 | Breakfast   | Cost |
 |-------------+------|
 | Eggs        | 2.99 |
@@ -656,7 +656,7 @@ Let's go back to a previous example --- the table holding our cost for breakfast
 
 Suppose now, we're buy breakfast for two?
 
-```text
+```text { class="my-example" }
 | Breakfast    | Cost |
 |--------------+------|
 | Eggs         | 2.99 |
@@ -679,7 +679,7 @@ It looks like it will take some work to update that formula. Can't we tighten th
 
 Yes, we can tighten the formula by using a function and a range.
 
-```text
+```text { class="my-example" }
 | Breakfast    |  Cost |
 |--------------+-------|
 | Eggs         |  2.99 |
@@ -700,7 +700,7 @@ Yes, we can tighten the formula by using a function and a range.
 
 @I is the first hline, and @II is the second hline. So in this formula:
 
-```text
+```text { class="my-example-30" }
 @11$2=vsum(@I..@II)
 ```
 
@@ -710,7 +710,7 @@ In row 11, column 2, put the sum of the values between the first and second hlin
 
 Because the target field is in column 2, the range @I..@II is interpreted in the current column, which is column 2. We could write this more explicitly as:
 
-```text
+```text { class="my-example-30" }
 @11$2=vsum(@I$2..@II$2)
 ```
 
@@ -727,7 +727,7 @@ Notice:
 
 The following version avoids that problem by putting the calculated values in fixed columns on the first data row. Now the formulas do not need to move when more breakfast items are added between the hlines.
 
-```text
+```text { class="my-example-10" }
 | Breakfast    | Cost | Total | Tip (15%) | Grand Total |
 |--------------+------+-------+-----------+-------------|
 | Eggs         | 2.99 | 19.67 |      2.95 |       22.62 |
@@ -757,7 +757,7 @@ Notice:
 
 If we wanted something a bit more natural, we could do this:
 
-```text
+```text { class="my-example-10" }
 |--------------+-------|
 | Breakfast    |       |
 |--------------+-------|
@@ -796,7 +796,7 @@ References like `$1`, `$-2`, `@-1`, and `@I..@II` are interpreted relative to th
 
 A column formula such as:
 
-```text
+```text { class="my-example-30" }
 #+TBLFM: $3=$1+$2
 ```
 
@@ -804,7 +804,7 @@ means: for each applicable row, calculate column 3 from columns 1 and 2 in that 
 
 A row formula such as:
 
-```text
+```text { class="my-example-30" }
 #+TBLFM: @5=@-4+@-3+@-2+@-1
 ```
 
@@ -812,7 +812,7 @@ means: for each applicable column, calculate row 5 from the rows above it.
 
 A range such as:
 
-```text
+```text { class="my-example-30" }
 @I$2..@II$2
 ```
 
@@ -820,16 +820,16 @@ selects a group of fields, and functions like `vsum` can operate on that group.
 
 That is the basic model:
 
-target
+**target**
 : where the result goes
 
-right-hand side
+**right-hand side**
 : how the result is computed
 
-current field
+**current field**
 : the field Org is calculating right now
 
-range
+**range**
 : a group of fields passed to a function
 
 There is much more available: Calc functions, formatting options, Lisp formulas, named fields, remote references, and more. But the examples above are enough to make ordinary Org tables useful.
@@ -841,7 +841,7 @@ Once you understand targets, current fields, relative references, and ranges, th
 
 In order to whet your appetite for more, here's a table that's a bit more rich:
 
-```text
+```text { class="my-example" }
 |       |    T1 |   T2 |    T3 | Total |  Mean | Max |
 |-------+-------+------+-------+-------+-------+-----|
 | A     |   990 |   20 |   500 |  1510 | 503.3 | 990 |
@@ -857,7 +857,7 @@ In order to whet your appetite for more, here's a table that's a bit more rich:
 
 The row formulas are:
 
-```text
+```text { class="my-example-20" }
 $5=if(@# < 6, vsum($2..$4), string(""))
 $6=if(@# < 6, vmean($2..$4), string(""));f1
 $7=if(@# < 6, vmax($2..$4), string(""))
@@ -869,7 +869,7 @@ There is something new here that we have not covered. The test `@# < 6` means "o
 
 Notice the formatting on the mean formula:
 
-```text
+```text { class="my-example-40" }
 ;f1
 ```
 
@@ -886,7 +886,7 @@ This displays the mean with one digit after the decimal point while still allowi
 
 The summary formulas are:
 
-```text
+```text { class="my-example-30" }
 @6$2..@6$4=vsum(@I..@II)
 @7$2..@7$4=vmean(@I..@II);%.1f
 @8$2..@8$4=vmax(@I..@II)
@@ -896,7 +896,7 @@ These calculate totals, means, and maximums for each test column.
 
 When formulas begin to get long and complex, the formula editor becomes necessary:
 
-{{< figure src="/ox-hugo/6formula.png" width="500px" >}}
+{{< figure src="/ox-hugo/6formula.png" class="my-screenshot" >}}
 
 Notice that it helpfully divides the formulas according to type, "column formulas" and "field and range formulas." (Not shown, but as you move your cursor on the formula, Emacs will also highlight the fields in the main buffer.)
 

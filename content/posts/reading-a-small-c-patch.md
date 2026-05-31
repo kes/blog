@@ -176,24 +176,25 @@ confstr() gets the value of configuration-dependent string variables.
 
 And it gives a signature:
 
-```text { class="my-example" }
+```text { class="my-example-10" }
 size_t confstr(int name, char buf[.size], size_t size);
 ```
 
 And further:
 
-```text { class="my-example" }
+```text { class="my-example-10" }
 _CS_PATH
-   A value for the PATH variable which indicates where all the POSIX.2 standard
-   utilities can be found.
+   A value for the PATH variable which indicates where all the
+   POSIX.2 standard utilities can be found.
 ```
 
 And also,
 
-```text { class="my-example" }
-If  buf  is  not NULL and size is not zero, confstr() copies the value of the
-string to buf truncated to size - 1 bytes if necessary, with a null byte ('\0')
-as terminator.  This can be detected by comparing the return value of confstr()
+```text { class="my-example-10" }
+If  buf  is  not NULL and size is not zero, confstr() copies
+the  value of the  string to buf truncated to size - 1 bytes
+if necessary,  with a null byte ('\0') as terminator.  This
+can be detected by comparing the return value of confstr()
 against size.
 ```
 
