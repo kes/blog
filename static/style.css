@@ -232,7 +232,8 @@ code.language-c,
 code.language-emacs-lisp,
 code.language-TOML,
 code.language-json,
-code.language-elisp
+code.language-elisp,
+code.language-lisp
 {
     color: #eec35e;
 }

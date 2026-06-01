@@ -2,7 +2,6 @@
 title: "Sorting in Emacs with Elisp"
 author: ["Karl Stump"]
 date: 2025-11-08
-tags: ["lisp", "emacs"]
 draft: false
 math: true
 ---
@@ -255,7 +254,7 @@ General text sorting routine to divide buffer into records and sort them.
 
 That opening is already promising: “divide buffer into records and sort them.”
 
-Clicking through to the source (in my case, `~/.local/share/emacs/31.0.50/lisp/sort.el`) reveals how it works, but the docstring alone gives a decent mental model.[^fn:1]
+Clicking through to the source (in my case, `~/.local/share/emacs/31.0.50/lisp/sort.el`) reveals how it works, but the docstring alone gives a decent mental model.
 
 We define:
 
@@ -382,7 +381,7 @@ A few details worth noting:
 -   In that case, `sort-subr` passes each key to the predicate as a cons cell: `(BEG . END)`.
 -   Our PREDICATE just computes the length `END - BEG` and compares lengths.
 
-This works nicely for a list of names.[^fn:2] But our original goal was to sort **cells** in an Org table, left-to-right, top-to-bottom.
+This works nicely for a list of names. But our original goal was to sort **cells** in an Org table, left-to-right, top-to-bottom.
 
 Time to get a bit fancier.
 
@@ -518,132 +517,6 @@ Here is the result of calling `kes/sort-org-table-by-field-length` on the table:
 
 </div>
 
-This really good. But let's change the requirements.
-
-
-## Third pass: a new sort order {#third-pass-a-new-sort-order}
-
-Suppose now we want the ability to sort top-to-bottom and then right-to-left.
-
-This exposes a bit of a problem. The regex-walker naturally searches from left-to-right (column first), then moves down a row, and continues searching. This is fine, since that was the given requirement.
-
-Moving top-to-bottom (row first) and then left-to-right is more of a challenge. However, there is a function `org-table-transpose-table-at-point`.
-
-Applying this transposition function to this table:
-
-```text
-| 1 | 2 | 4 | 5 |
-| a | b | c | d |
-| e | f | g | h |
-```
-
-Results in this:
-
-```text
-| 1 | a | e |
-| 2 | b | f |
-| 4 | c | g |
-| 5 | d | h |
-```
-
-That's exactly what we want. We can use this function to transpose the table of names, then sort, then transpose back. Here's the updated code.
-
-```emacs-lisp
-  (defun kes/sort-org-table-by-field-length (arg)
-  "Sort current Org table by cell length.
-Invoke anywhere inside the table (no active region needed). With prefix
-argument, sort longest cells first. With prefix argument pressed
-twice, sort transposed."
-    (interactive "P")
-    (save-excursion
-      (save-restriction
-        (let ((reverse nil)
-              (transpose nil)
-              (beg (org-table-begin))
-              (end (org-table-end)))
-          (narrow-to-region beg end)
-          (goto-char (point-min))
-          (when arg
-            (if (= (car arg) 16)  ; c-u c-u is 16
-                (setq transpose t)
-              (setq reverse t)))
-          (when transpose
-            (org-table-transpose-table-at-point)
-            (setq arg nil))
-          (kes/record-start)
-          (sort-subr
-           reverse
-           #'kes/record-start
-           #'kes/record-end
-           (lambda ()
-             ;; STARTKEYFUN: compute width of current cell as key value.
-             (save-excursion
-               (let ((start (point)))
-                 (kes/record-end)
-                 (- (point) start)))))
-          ;; clean up and perhaps transpose back
-          (org-table-align)
-          (when transpose
-            (goto-char (point-min))
-            (org-table-transpose-table-at-point))))))
-```
-
-Key points:
-
--   We change `reverse` to `arg` in the parameter list
-    -   it could indicate reversing the sort order
-    -   it could indicate transposing the sort order
--   We distinguish how many times `C-u` is pressed
-    -   `C-u` is known as the "universal argument"
-    -   press once and its value is 4
-    -   press twice and its value is 16 (we check only for 16)
--   We clean up
-    -   if we are transpose sorting, we must transpose back
-
-Transpose sorting gives us top-to-bottom, left-to-right as in the following.
-
-<style>
-.table-4 table th {
-    text-align: left;
-    padding: 15px;
-    text-transform: capitalize;
-}
-.table-4 table td {
-    text-align: left;
-    padding: 15px;
-    text-transform: capitalize;
-}
-.table-number {
-  display: none;
-}
-.table-caption{
-    font-style: italic;
-    font-weight: lighter;
-    text-align: center;
-}
-</style>
-
-<style>.table-4 table { text-align: center;  width: 100%;  margin: 0 auto;  }</style>
-
-<div class="ox-hugo-table table-4">
-<div class="table-caption">
-  <span class="table-number">Table 5:</span>
-  Sorted by length, top-to-bottom, left-to-right
-</div>
-
-| Ray Sin   | Anne Teak    | Allie Grater    | Ivana B. Withew   |
-|-----------|--------------|-----------------|-------------------|
-| Liz Erd   | Ray O’Sun    | I. Missy Ewe    | P. Ann O’Recital  |
-| A. Mused  | I.M. Tired   | Paige Turner    | Constance Noring  |
-| U.R. Nice | Ann Chovey   | Lynn O’Leeum    | Anita Letterback  |
-| Peg Legge | Hazel Nutt   | Augusta Wind    | Minnie Van Ryder  |
-| Olive Yew | Anita Bath   | Marsha Mellow   | Isabelle Ringing  |
-| Rita Book | Harriet Upp  | Chris P. Bacon  | Patty O’Furniture |
-| Barb Akew | Teri Dactyl  | Chris Anthemum  | Maureen Biologist |
-| Aida Bugg | Rhoda Report | Eileen Sideways | Lois Di Nominator |
-
-</div>
-
 
 ## Conclusion {#conclusion}
 
@@ -664,6 +537,3 @@ The pattern is useful beyond this example:
 -   Let Unix do what Unix is good at.
 -   Let Emacs do what Emacs is good at.
 -   And when the problem sits at the intersection — like sorting structured text inside your editor — it’s nice to know what tools Emacs has waiting under the hood.
-
-[^fn:1]: In sort.el is found the function sort-lines which sorts alphabetically. Instrumenting and stepping through it with the debugger is another excellent path forward.
-[^fn:2]: An improvement would be to have STARTKEFUN simply compute the length and return it. In that case, ENDKEYFUN and PREDICATE can be nil. We will see this in the next version, along with other changes.

@@ -183,6 +183,7 @@ Done.
 First we need some way to convert a position in the string (i)  to a row based on the number of rows. This will do. This mapping is just easy math.
 
 ```lisp { linenos=true, linenostart=1 }
+
 ;; map index i to a row number based on cyclic pattern
 (define (index->row i num-rows)
     (let* ((cycle (* 2 (- num-rows 1)))
@@ -226,22 +227,7 @@ Given a string and the number of rows, we build strings. The vector is just a li
 
 This solution works well.
 
-<style>
-figure.my-figure{
-    margin: 0 auto;  /* Centers the figure */
-    text-align: center;  /* Centers the caption */
-    width: 65%;  /* Set a width for the figure */
-}
-.my-figure figcaption{
-    font-style: italic;
-    font-weight: lighter;
-}
-.figure-number{
-    display: none;
-    }
-</style>
-
-{{< figure src="/ox-hugo/zig-zag-first-pass.png" caption="<span class=\"figure-number\">Figure 1: </span>...pretty good..." class="my-figure" >}}
+{{< figure src="/ox-hugo/zig-zag-first-pass.png" caption="<span class=\"figure-number\">Figure 1: </span>...pretty good..." >}}
 
 There is room to optimize.
 
@@ -259,14 +245,7 @@ A faster strategy:
 
 Will these changes make any difference?
 
-<style>
-.my-code-1{
-/* margin-right:-100px;
-margin-left: -100px; */
-}
-</style>
-
-```lisp { class="my-code-1", linenos=true, linenostart=1 }
+```lisp { linenos=true, linenostart=1 }
 ;; zigzag-convert-numeric-fast: string x integer -> string
 ;; More efficient version using lists of chars + one big final string.
 (define (zigzag-convert-numeric-fast s num-rows)

@@ -106,7 +106,7 @@ And from the same documentation we learn:
 
 And, we are shown this:
 
-```TOML { class="my-code" }
+```TOML
 [[fruits]]
 name = "apple"
 
