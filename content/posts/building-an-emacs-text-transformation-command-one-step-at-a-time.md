@@ -29,7 +29,7 @@ The source code for `query-replace-regexp` and what it ultimately calls, `perfor
 
 The last two parameters of `re-search-forward`, `nil` and `t`, are optional, but when used in a while construct they are necessary.
 
--   The first sets the maximum bound, and `nil`, means no bounds, go until the end of the buffer.
+-   The first sets the maximum bound, and `nil` means no bounds (i.e., go until the end of the buffer).
 -   The second controls what happens on error --- and, note,  not finding a match will generate an error ---  `t` means simply return `nil`. That works well for controlling the while loop --- when no more matches are found, it exits.
 
 There are a number of functions that work with `re-search-forward`. These are documented as:
@@ -66,7 +66,7 @@ Transforming `[1, 2, 3]` to `[fn:1][fn:2][fn:3]` should not be difficult. But th
 
 Simplifying the problem can be a good start.
 
-If we imagine that we can strip away the square brackets, we can work on the task of transforming string: `"1, 2, 3"` --- not much a change, but a bit easier.
+If we imagine that we can strip away the square brackets, we can work on the task of transforming: `"1, 2, 3"` --- no brackets --- not much of a change, but a bit easier.
 
 
 ### split-string {#split-string}
@@ -83,7 +83,83 @@ Evaluating this we get a list:
 ("1" " 2" " 3")
 ```
 
-We have made a first step. We can generate a list from a comma delimited string.
+There is more that we can do. Looking at the documentation for `split-string` we discover:
+
+```text
+(split-string STRING &optional SEPARATORS OMIT-EMPTY TRIM)
+...
+If SEPARATORS is non-nil, it should be a regular expression matching text
+that separates, but is not part of, the substrings.
+...
+If OMIT-EMPTY is t, zero-length substrings are omitted from the list.
+..
+If TRIM is non-nil, it should be a regular expression to match
+text to trim from the beginning and end of each substring.
+```
+
+This is good to know.
+
+For example, suppose there were extra commas.
+
+```elisp
+(split-string "1, 2,,,, 3" ",")
+```
+
+That would evaluate to a list with empty strings, like this:
+
+```elisp
+("1" " 2" "" "" "" " 3")
+```
+
+But if we supply the `OMIT-EMPTY` argument as `t` we get the correct results:
+
+```elisp
+(split-string "1, 2,,,, 3" "," t)
+```
+
+```elisp
+("1" " 2" " 3")
+```
+
+`split-string` also allows trimming.
+
+With no trimming, this
+
+```elisp
+(split-string "1, 2      ,3" "," t)
+```
+
+returns:
+
+```elisp
+("1" " 2      " "3")
+```
+
+If we add trimming:
+
+```elisp
+(split-string "1, 2      ,3" "," t "[ \\t\\n\\r]+")
+```
+
+We get this:
+
+```elisp
+("1" "2" "3")
+```
+
+And with a string that requires both omitting empties and trimming:
+
+```elisp
+(split-string "1, 2     ,,,,,,3" "," t "[ \\t\\n\\r]+")
+```
+
+We get this:
+
+```elisp
+("1" "2" "3")
+```
+
+We have made a first step. We can generate a list from a comma delimited string, and we can even ensure that the list of strings is cleaned up.
 
 Since we have a list, Lisp **ought** to be the right tool, for sure.
 
@@ -92,9 +168,9 @@ Since we have a list, Lisp **ought** to be the right tool, for sure.
 
 mapconcat applies a  function to each element of a list and then concatenates the results as strings.
 
-So, we need a function that takes as its input a string, and outputs a string in the correct footnote syntax.
+So, we need a function that takes string (a number), and outputs a string in the correct footnote syntax.
 
-We'll use a lambda, and in the lambda put `format` to work.
+We'll use a lambda, and in the lambda we put `format` to work.
 
 ```elisp
 (mapconcat (lambda (num)
@@ -174,7 +250,17 @@ Evaluating gives us:
 "1, 2, 3"
 ```
 
-Looks good. We've gotten rid of the square brackets and we know we can send that string to `split-string` and get a list, and then send that list on to `mapconcat`. Things are coming together.
+Looks good. On the one hand, we can identify a string of bracketed footnotes. On the other, we can get rid of those brackets and send the string to `split-string` which then gives us a list to send to `mapconcat`.
+
+Things are coming together.
+
+And note, we also match on more poorly formed strings.
+
+```elisp
+(replace-regexp-in-string "\\[\\([[:digit:], ]+\\)\\]" "\\1" "[1,,,,, 2      , 3]")
+```
+
+Which we already know we can handled with `split-string`.
 
 
 ## Build It {#build-it}
@@ -183,17 +269,17 @@ Now that we have all the pieces we need to build our little function.
 
 First we'll focus on the main body.
 
-We want to run `re-search-forward` for one pass.
+We want to run `re-search-forward` for one iteration.
 
 But how?
 
-We want to run a program fragment against a buffer with text to be transformed. But we can't call a program fragment. So, it looks like we need a skeleton program we can at least call.
+The problem is that we want to run a program fragment against a buffer containing the text to be transformed. But we can't call a program fragment. So, it looks like we need a skeleton program.
 
-And that is one approach. But, importantly, we don't have to follow that approach either. We can, but we're not forced to do so.
+And that is one approach. But, we don't have to follow that approach with Emacs and Elisp.
 
-Instead, just as we've been testing with various bits, we can continue to do so as we bring the pieces together and grow the program.
+Instead, just as we've been testing with various bits as we go, we can continue to do so as we bring the pieces together and grow the program.
 
-We want to develop our code and have it run in the context of a buffer we've filled with targets to test against. Emacs makes this very convenient with the `with-temp-buffer` wrapper.
+We want to run our growing program in the context of a buffer filled with targets to test against. Emacs makes this very convenient with the `with-temp-buffer` wrapper.
 
 The documentation reads:
 
@@ -203,7 +289,7 @@ The documentation reads:
 > current, evaluates the BODY forms, and finally restores the
 > previous current buffer while killing the temporary buffer.
 
-So, even with our fragmentary code, let's create a temporary buffer and insert some strings to target.
+Let's try it.
 
 
 ## Testing the Capture Groups {#testing-the-capture-groups}
@@ -225,9 +311,9 @@ So, even with our fragmentary code, let's create a temporary buffer and insert s
         :captured-group (match-string 1)))
 ```
 
-`with-temp-buffer` creates a temp buffer, and makes it current. Now, our code is running in that buffer's context. So, we insert some data (and note, we don't specify a buffer name).
+`with-temp-buffer` creates a temp buffer, and makes it current. Now, our code is running in that buffer's context. So, we `insert` some data.
 
-Now, we `goto-char` to the `(point-min)` of the temp buffer, run `re-search-forward` one time. Then collect some data into a list. This list is then returned.
+Now, we `goto-char` to the `(point-min)` of the temp buffer, run `re-search-forward` one time. Then collect some data into a list which is then returned.
 
 So, evaluating we get:
 
@@ -307,20 +393,44 @@ Now let's do the transformation.
   (let*
       ((raw-numbers (match-string-no-properties 1))
        ;; Split "1, 2, 3" into a list of strings
-       (num-list (split-string raw-numbers ","))
+       (num-list (split-string raw-numbers "," t "[ \\t\\n\\r]+"))
        ;; Map over the list, trim spaces, and wrap in [fn:X]
        ;; Note: string-trim overwrites match-data here!
        (new-footnotes
         (mapconcat (lambda (num)
-                     (format "[fn:%s]" (string-trim num)))
-                   num-list
-                   "")))
+                     (format "[fn:%s]" num))
+                   num-list)))
     new-footnotes))
 ```
 
 After `re-search-forward` we collect the inner string using `match-string-no-properties` The number 1 indicates that we want the first capture sub-expression. (You might have multiple captured expressions, all of which would be numbered. We have only one sub-expression, so we want number 1.)
 
 Evaluating:
+
+```elisp
+"[fn:1][fn:2][fn:3]"
+```
+
+Excellent. Now, lets test with a badly formed footnote.
+
+```elisp
+(with-temp-buffer
+  (insert  "Here is the first target: [1, 2      ,,,,,,, 3], second, [4, 5] and third [1, 2, 3, 4, 5, 6]")
+  (goto-char (point-min))
+
+  (re-search-forward "\\[\\([[:digit:], ]+\\)\\]" nil t)
+  (let*
+      ((raw-numbers (match-string-no-properties 1))
+       ;; Split "1, 2, 3" into a list of strings
+       (num-list (split-string raw-numbers "," t "[ \\t\\n\\r]+"))
+       ;; Map over the list, trim spaces, and wrap in [fn:X]
+       ;; Note: string-trim overwrites match-data here!
+       (new-footnotes
+        (mapconcat (lambda (num)
+                     (format "[fn:%s]" num))
+                   num-list)))
+    new-footnotes))
+```
 
 ```elisp
 "[fn:1][fn:2][fn:3]"
@@ -349,14 +459,13 @@ With the match beginning and end we can delete the matched string and then inser
            (end (match-end 0))       ;; Cache end of [1, 2, 3]
            (raw-numbers (match-string-no-properties 1))
            ;; Split "1, 2, 3" into a list of strings
-           (num-list (split-string raw-numbers ","))
+           (num-list (split-string raw-numbers "," t "[ \\t\\n\\r]+"))
            ;; Map over the list, trim spaces, and wrap in [fn:X]
            ;; Note: string-trim overwrites match-data here!
            (new-footnotes
             (mapconcat (lambda (num)
-                         (format "[fn:%s]" (string-trim num)))
-                       num-list
-                       "")))
+                         (format "[fn:%s]" num))
+                       num-list)))
       ;; Safely delete the old text and insert the new text using cached positions
       (delete-region beg end)
       (insert new-footnotes)))
@@ -364,6 +473,37 @@ With the match beginning and end we can delete the matched string and then inser
 ```
 
 Notice here that we are making all the modifications in temp-buffer, and then we return `(buffer-string)` which as the name implies is contents of the buffer as a string.[^fn:9]
+
+```text
+Here is the first target: [fn:1][fn:2][fn:3],
+second, [fn:4][fn:5]
+and third [fn:1][fn:2][fn:3][fn:4][fn:5][fn:6]
+```
+
+And a test with badly formed footnotes:
+
+```elisp
+(with-temp-buffer
+  (insert  "Here is the first target: [1, 2,,,,,,     3],\nsecond, [4,    5,]\nand third [1, 2,   3,,, 4, 5, 6]")
+  (goto-char (point-min))
+
+  (while (re-search-forward "\\[\\([[:digit:], ]+\\)\\]" nil t)
+    (let* ((beg (match-beginning 0)) ;; Cache start of [1, 2, 3]
+           (end (match-end 0))       ;; Cache end of [1, 2, 3]
+           (raw-numbers (match-string-no-properties 1))
+           ;; Split "1, 2, 3" into a list of strings
+           (num-list (split-string raw-numbers "," t "[ \\t\\n\\r]+"))
+           ;; Map over the list, trim spaces, and wrap in [fn:X]
+           ;; Note: string-trim overwrites match-data here!
+           (new-footnotes
+            (mapconcat (lambda (num)
+                         (format "[fn:%s]" num))
+                       num-list)))
+      ;; Safely delete the old text and insert the new text using cached positions
+      (delete-region beg end)
+      (insert new-footnotes)))
+  (buffer-string))
+```
 
 ```text
 Here is the first target: [fn:1][fn:2][fn:3],
@@ -388,7 +528,7 @@ Now, we can finish up.[^fn:10]
              (end (match-end 0))       ;; Cache end of [1, 2, 3]
              (raw-numbers (match-string-no-properties 1))
              ;; Split "1, 2, 3" into a list of strings
-             (num-list (split-string raw-numbers ","))
+             (num-list (split-string raw-numbers "," t "[ \\t\\n\\r]+"))
              ;; Map over the list, trim spaces, and wrap in [fn:X]
              ;; Note: string-trim overwrites match-data here!
              (new-footnotes
@@ -408,9 +548,9 @@ Textual modification is a constant necessity.
 
 For me, I get footnotes that are not supported by Org Mode. I must modify them for them to be useful.
 
-There might be many acceptable approaches for doing these modifications: doing it manually, writing macros, writing a shell script,  or, as demonstrated in this document, writing an Elisp function.
+There might be many acceptable approaches for this task: doing it manually, writing macros, writing a shell script, or, as demonstrated in this document, writing an Elisp function.
 
-Developing `my/refromat-footnote` did not require us to know a 600-line general purpose replacement engine. We started with one function and set to work on a simplified problem. From there we gradually added complexity and checked the results along the way at each step. Using `with-temp-buffer` was an essential element of being able to test and grow the program.[^fn:11]
+Developing `my/refromat-footnote` did not require us to know a 600-line general purpose replacement engine. We started with one function and set to work on a simplified problem. From there we gradually added complexity and checked the results along the way at each step. Using `with-temp-buffer` was an essential element of being able to test and grow our code.[^fn:11]
 
 Emacs, Elisp and incremental development is a powerful and satisfying approach for building up useful and moderately complex utility functions.
 
@@ -424,4 +564,4 @@ Emacs, Elisp and incremental development is a powerful and satisfying approach f
 [^fn:8]: There's another way to do this, using the `(save-match-data ...)` wrapper. I very much like this, too, and arguably it's more readable and lispy. My use of mapconcat and string-trim, while lispy, might be challenged. This will cause more consing and garbage collection. But for small buffers, it's completely fine.
 [^fn:9]: Notice, too, that I have inserted newlines into the initial temp-buffer string to increase readability
 [^fn:10]: There is more we could do, of course. However, this is fine for our immediate purposes.
-[^fn:11]: This command assumes that bracketed numeric lists in the buffer are footnote references. In a document containing other bracketed numeric lists, I would narrow to a region or continue development and make the replacement interactive.
+[^fn:11]: We have assumed that bracketed numeric lists in the buffer are footnote references. In a document containing other bracketed numeric lists, I would narrow to a region or continue development and make the replacement interactive.
