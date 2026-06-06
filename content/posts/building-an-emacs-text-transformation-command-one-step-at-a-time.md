@@ -260,6 +260,10 @@ And note, we also match on more poorly formed strings.
 (replace-regexp-in-string "\\[\\([[:digit:], ]+\\)\\]" "\\1" "[1,,,,, 2      , 3]")
 ```
 
+```elisp
+"1,,,,, 2      , 3"
+```
+
 Which we already know we can handled with `split-string`.
 
 
